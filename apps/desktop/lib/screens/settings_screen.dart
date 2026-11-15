@@ -452,8 +452,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   )
                 : DropdownButtonFormField<String>(
-                    key: ValueKey('policy-${setting.effect}'),
-                    value: selected,
+                    key: ValueKey('policy-${setting.effect}-$selected'),
+                    initialValue: selected,
                     isExpanded: true,
                     decoration: const InputDecoration(
                       labelText: 'Behavior',
