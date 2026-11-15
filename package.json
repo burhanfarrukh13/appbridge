@@ -25,9 +25,9 @@
     "repo:set": "node scripts/set-repo.mjs"
   },
   "devDependencies": {
-    "@types/node": "^24.0.0",
+    "@types/node": "^26.6.6",
     "tsx": "^4.20.0",
-    "typescript": "^5.9.0"
+    "typescript": "^7.0.2"
   },
   "license": "Apache-2.0",
   "author": "Burhan Qureshi",
