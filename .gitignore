@@ -14,6 +14,7 @@ npm-debug.log*
 
 # Local scratch space (probe scripts, captured scenes, experiments)
 scratch/
+.freebuff/
 
 # Appbridge runtime data, if someone points APPBRIDGE_HOME at the repo
 .appbridge/
