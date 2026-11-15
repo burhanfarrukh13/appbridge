@@ -1,0 +1,25 @@
+{
+  "name": "@appbridge/core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "smol-toml": "^1.4.2"
+  },
+  "license": "Apache-2.0",
+  "author": "Burhan Qureshi",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OWNER/REPO.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/OWNER/REPO/tree/main/packages/core#readme"
+}

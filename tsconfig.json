@@ -1,0 +1,13 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/core" },
+    { "path": "./packages/safety" },
+    { "path": "./packages/floor" },
+    { "path": "./packages/memory" },
+    { "path": "./packages/providers" },
+    { "path": "./packages/gateway" },
+    { "path": "./packages/connect" },
+    { "path": "./packages/cli" }
+  ]
+}

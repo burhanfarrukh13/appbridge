@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src"
+  },
+  "include": ["src/**/*.ts"],
+  "references": [
+    { "path": "../core" },
+    { "path": "../safety" },
+    { "path": "../memory" },
+    { "path": "../gateway" },
+    { "path": "../connect" },
+    { "path": "../providers" }
+  ]
+}

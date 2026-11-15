@@ -1,0 +1,33 @@
+{
+  "name": "@appbridge/memory",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./dialogs": {
+      "types": "./dist/dialogs.d.ts",
+      "import": "./dist/dialogs.js"
+    },
+    "./skills": {
+      "types": "./dist/skills.d.ts",
+      "import": "./dist/skills.js"
+    }
+  },
+  "dependencies": {
+    "@appbridge/core": "0.1.0"
+  },
+  "license": "Apache-2.0",
+  "author": "Burhan Qureshi",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OWNER/REPO.git",
+    "directory": "packages/memory"
+  },
+  "homepage": "https://github.com/OWNER/REPO/tree/main/packages/memory#readme"
+}

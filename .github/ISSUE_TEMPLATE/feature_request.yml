@@ -1,0 +1,49 @@
+name: Feature request
+description: A capability, integration, or improvement that would make the harness more useful.
+title: "[feat] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What can an agent not do today, and who does it hurt?
+      placeholder: When I try to ..., Appbridge ...
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behaviour
+      description: What should the tool, Scene, or policy do instead? Include the interface you imagine.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Perception (Scene, OCR, grounding)
+        - Action / driver / new platform
+        - Verification
+        - Safety, approvals, audit
+        - Local files and terminal
+        - Memory, Skills, App Packs
+        - Interfaces (MCP, REST, CLI, desktop)
+        - Docs and developer experience
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Existing tools or workarounds, and why they are not enough.
+  - type: checkboxes
+    id: contract
+    attributes:
+      label: Design constraints
+      options:
+        - label: This can be implemented without naming a specific app or vendor in `packages/`.
+          required: true
+        - label: I checked gap_plan.md and this is not already listed.
+          required: true
