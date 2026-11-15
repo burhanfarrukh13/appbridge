@@ -185,7 +185,7 @@ packages/connect     MCP client detection and config writers with backup/undo
 packages/cli         the `appbridge` command
 apps/desktop         Flutter desktop console (dashboard, chat, approvals, audit)
 scripts              Universality Contract lint
-docs                 status, architecture, tool reference
+docs                 status, architecture, tool reference, publishing checklist
 plan.md              the long-form design plan behind the implementation
 gap_plan.md          competitive gap analysis and roadmap
 ```
