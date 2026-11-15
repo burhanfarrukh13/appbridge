@@ -1,0 +1,33 @@
+{
+  "name": "@appbridge/cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "appbridge": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "@appbridge/connect": "0.1.0",
+    "@appbridge/core": "0.1.0",
+    "@appbridge/gateway": "0.1.0",
+    "@appbridge/memory": "0.1.0",
+    "@appbridge/providers": "0.1.0",
+    "@appbridge/safety": "0.1.0"
+  },
+  "license": "Apache-2.0",
+  "author": "Burhan Qureshi",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OWNER/REPO.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://github.com/OWNER/REPO/tree/main/packages/cli#readme"
+}

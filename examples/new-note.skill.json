@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "id": "new-note-with-text",
+  "app_id": "notes-app",
+  "name": "Create a note with text",
+  "description": "Focuses the app, creates a note, types the supplied text, and verifies the editor value.",
+  "window_titles": ["Notes"],
+  "params": {
+    "text": {
+      "type": "string",
+      "required": true,
+      "description": "Body of the new note."
+    },
+    "title": {
+      "type": "string",
+      "default": "Untitled",
+      "description": "Optional note title used in the verification step."
+    }
+  },
+  "risk": "write",
+  "steps": [
+    { "act": "focus_window", "title": "Notes" },
+    {
+      "act": "click",
+      "target": { "role": "Button", "name": "New note" },
+      "expect": { "element_appears": { "role": "Edit", "name": "Note Editor" } },
+      "timeout_ms": 4000,
+      "note": "Button is labelled in English here; a Playbook can supply a localised selector."
+    },
+    { "act": "set_value", "target": { "role": "Edit", "name": "Note Editor" }, "value": "${text}" },
+    {
+      "act": "expect",
+      "expect": { "window_title_contains": "Notes" },
+      "note": "Prefer window or element expectations over session-scoped element ids."
+    }
+  ],
+  "source": "manual",
+  "created_at": "2026-11-15T00:00:00.000Z",
+  "updated_at": "2026-11-15T00:00:00.000Z",
+  "stats": { "runs": 0, "successes": 0 }
+}

@@ -1,0 +1,49 @@
+# Example Appbridge configuration.
+# Copy to ~/.appbridge/config.toml and edit, or run `appbridge init`.
+# Policy values: allow | approve | block | handoff.
+
+[gateway]
+bind = "127.0.0.1"
+port = 8787
+
+[scene]
+# Upper bound for one snapshot. Dense apps are better read with max_depth + root.
+max_elements = 1000
+max_depth = 20
+include_offscreen = false
+# auto: run OCR only when accessibility exposes almost no text.
+# on: always. off: never.
+ocr = "auto"
+
+[safety]
+untrusted_requires_approval = false
+approval_ttl_seconds = 1800
+
+[egress]
+# local-only blocks all outbound provider calls; cloud-allowed permits the configured provider.
+mode = "cloud-allowed"
+
+[workspace]
+# shared: act on this desktop. vm: reserved for a future isolated workspace.
+mode = "shared"
+
+[filesystem]
+# Only these directories are available to filesystem and terminal tools.
+roots = ["D:\\Projects", "C:\\Users\\you\\Documents\\Work"]
+max_file_bytes = 5000000
+max_search_results = 100
+
+[terminal]
+timeout_ms = 30000
+max_output_chars = 32000
+
+[policy]
+navigate = "allow"
+read = "allow"
+"edit-draft" = "allow"
+write = "allow"
+destructive = "approve"
+"external-effect" = "approve"
+privileged = "handoff"
+credential = "handoff"
+unknown = "approve"

@@ -1,0 +1,55 @@
+# Node / TypeScript
+node_modules/
+dist/
+*.tsbuildinfo
+*.log
+npm-debug.log*
+.eslintcache
+.cache/
+
+# Environment and local secrets
+.env
+.env.*
+!.env.example
+
+# Local scratch space (probe scripts, captured scenes, experiments)
+scratch/
+
+# Appbridge runtime data, if someone points APPBRIDGE_HOME at the repo
+.appbridge/
+audit.jsonl*
+
+# Exported packs and local archives
+*.zip
+*.pack.json
+packs/
+
+# OS noise
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json.example
+.idea/
+*.iml
+*.suo
+*.user
+.vs/
+
+# Flutter / Dart desktop app
+apps/desktop/.dart_tool/
+apps/desktop/.flutter-plugins
+apps/desktop/.flutter-plugins-dependencies
+apps/desktop/build/
+apps/desktop/windows/flutter/ephemeral/
+apps/desktop/linux/flutter/ephemeral/
+apps/desktop/macos/Flutter/ephemeral/
+apps/desktop/ios/Flutter/ephemeral/
+apps/desktop/android/.gradle/
+apps/desktop/android/local.properties
+apps/desktop/android/app/debug/
+apps/desktop/android/app/profile/
+apps/desktop/android/app/release/
