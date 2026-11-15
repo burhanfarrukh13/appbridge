@@ -4,7 +4,7 @@
 > [`docs/status.md`](./docs/status.md) and the current gap analysis and roadmap in
 > [`gap_plan.md`](./gap_plan.md).
 
-> **Written:** 2026-11-06, after reviewing `D:\claude\appbridge` against `plan.md`.
+> **Written:** 2026-11-06, after reviewing this repository against `plan.md`.
 > **Companion to `plan.md`, not a replacement.** `plan.md` stays the master plan and the source of
 > section numbers. This file says how far the code has actually got and what remains, in the order
 > I would do it.

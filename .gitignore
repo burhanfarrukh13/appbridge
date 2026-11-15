@@ -24,6 +24,7 @@ audit.jsonl*
 *.zip
 *.pack.json
 packs/
+.release/
 
 # OS noise
 .DS_Store

@@ -1,6 +1,6 @@
 {
   "name": "@appbridge/cli",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "private": true,
   "type": "module",
   "bin": {
@@ -15,12 +15,12 @@
     }
   },
   "dependencies": {
-    "@appbridge/connect": "0.1.0",
-    "@appbridge/core": "0.1.0",
-    "@appbridge/gateway": "0.1.0",
-    "@appbridge/memory": "0.1.0",
-    "@appbridge/providers": "0.1.0",
-    "@appbridge/safety": "0.1.0"
+    "@appbridge/connect": "0.0.1",
+    "@appbridge/core": "0.0.1",
+    "@appbridge/gateway": "0.0.1",
+    "@appbridge/memory": "0.0.1",
+    "@appbridge/providers": "0.0.1",
+    "@appbridge/safety": "0.0.1"
   },
   "license": "Apache-2.0",
   "author": "Burhan Qureshi",

@@ -1,0 +1,76 @@
+name: Windows release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and publish Windows ZIP
+    runs-on: windows-latest
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24.15.0"
+          cache: npm
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.44.9"
+          channel: stable
+
+      - name: Validate release version
+        shell: pwsh
+        run: |
+          $version = $env:GITHUB_REF_NAME -replace '^v', ''
+          $package = Get-Content package.json -Raw | ConvertFrom-Json
+          if ($package.version -ne $version) { throw "Tag and package version do not match." }
+          "APPBRIDGE_VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Node checks
+        run: npm run check
+
+      - name: Flutter dependencies
+        working-directory: apps/desktop
+        run: flutter pub get --enforce-lockfile
+
+      - name: Flutter tests
+        working-directory: apps/desktop
+        run: flutter test
+
+      - name: Flutter analyze
+        working-directory: apps/desktop
+        run: flutter analyze
+
+      - name: Build Windows desktop
+        working-directory: apps/desktop
+        shell: pwsh
+        run: flutter build windows --release --build-name $env:APPBRIDGE_VERSION --build-number 1
+
+      - name: Package portable ZIP
+        shell: pwsh
+        run: .\scripts\package-windows-release.ps1 -Version $env:APPBRIDGE_VERSION -OutputDirectory $env:RUNNER_TEMP
+
+      - name: Publish pre-release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $pattern = "(?ms)^## \[$([regex]::Escape($env:APPBRIDGE_VERSION))\].*?(?=^## \[|\z)"
+          $changelog = Get-Content CHANGELOG.md -Raw
+          $match = [regex]::Match($changelog, $pattern)
+          if (!$match.Success) { throw "CHANGELOG.md has no section for $env:APPBRIDGE_VERSION." }
+          $notes = Join-Path $env:RUNNER_TEMP "release-notes.md"
+          Set-Content -LiteralPath $notes -Value $match.Value.Trim() -Encoding utf8
+          $archive = Join-Path $env:RUNNER_TEMP "Appbridge-$env:APPBRIDGE_VERSION-windows-x64.zip"
+          gh release create $env:GITHUB_REF_NAME $archive "$archive.sha256" --repo $env:GITHUB_REPOSITORY --title "Appbridge $env:APPBRIDGE_VERSION" --prerelease --notes-file $notes

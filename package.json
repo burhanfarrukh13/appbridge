@@ -1,6 +1,6 @@
 {
   "name": "appbridge",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "private": true,
   "type": "module",
   "description": "Local, safety-governed computer use for AI agents: drives any Windows app through accessibility, verifies actions, and gates irreversible effects behind human approval.",

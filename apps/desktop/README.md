@@ -26,6 +26,16 @@ npm run desktop:build    # flutter build windows
 
 Output lands in `apps/desktop/build/windows/x64/runner/Release/`.
 
+## Portable Windows release
+
+The GitHub release ZIP contains the complete Flutter output plus a colocated Appbridge
+backend runtime and Node.js. Extract the full ZIP to a stable folder and run
+`appbridge_desktop.exe`; do not move or run the EXE by itself. On first launch, use
+**Settings → Start Core Daemon**. Configure the allowed file roots in
+`%USERPROFILE%\.appbridge\config.toml` before connecting an AI client. Optional Ollama
+settings can be supplied in `%USERPROFILE%\.appbridge\agent.env`. This is a portable ZIP,
+not an installer, and the executable is not code-signed.
+
 ## Layout
 
 ```text

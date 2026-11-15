@@ -42,3 +42,27 @@ jobs:
 
       - name: Package dry run
         run: npm pack --dry-run --workspace @appbridge/cli
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.44.9"
+          channel: stable
+
+      - name: Flutter dependencies
+        working-directory: apps/desktop
+        run: flutter pub get --enforce-lockfile
+
+      - name: Flutter tests
+        working-directory: apps/desktop
+        run: flutter test
+
+      - name: Flutter analyze
+        working-directory: apps/desktop
+        run: flutter analyze
+
+      - name: Build Windows desktop
+        shell: pwsh
+        run: |
+          $version = (Get-Content ..\..\package.json -Raw | ConvertFrom-Json).version
+          flutter build windows --release --build-name $version --build-number 1
+        working-directory: apps/desktop

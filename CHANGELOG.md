@@ -4,10 +4,10 @@ All notable changes to this project are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); the project uses
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html) once it reaches 1.0.
 
-## [0.1.0] — 2026-11-15
+## [0.0.1] — 2026-11-15
 
-First public slice: a working Windows Floor, safety harness, MCP/REST/CLI surface, App
-Memory, and a desktop console.
+First public release: a working Windows Floor, safety harness, MCP/REST/CLI surface, App
+Memory, desktop console, and a portable Windows ZIP package.
 
 ### Added
 
@@ -37,6 +37,8 @@ Memory, and a desktop console.
   undo.
 - **Desktop console.** Flutter app with dashboard, app list, approval queue, audit timeline,
   skills, settings and a chat panel.
+- **Portable Windows ZIP.** Includes the desktop app and production backend runtime; extracts
+  and runs without a source checkout or separate Node.js installation.
 - **Project scaffolding.** Apache-2.0 license, contributing guide, security policy, code of
   conduct, CI workflow, issue and pull request templates, architecture and tool reference
   docs, examples, and a competitive gap analysis (`gap_plan.md`).
@@ -52,6 +54,9 @@ Memory, and a desktop console.
 - Approval updates could be lost between concurrent processes; the store now uses the same
   cross-process lock.
 - CLI version and MCP server version were hardcoded; both now come from `package.json`.
+- Desktop startup no longer depends on a maintainer-specific checkout path.
+- Ollama settings can be loaded from the per-user Appbridge environment file without a
+  maintainer-specific path or greeting.
 - README described an earlier build (claimed no GUI, no Skills, no App Packs).
 
 ### Known limits

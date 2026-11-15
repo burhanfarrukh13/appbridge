@@ -721,13 +721,13 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                     _refreshLocalModels();
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('Settings re-imported from D:\\claude\\cipher\\backend\\.env'),
+                        content: Text('Agent settings reloaded from environment.'),
                         backgroundColor: AppTheme.success,
                       ),
                     );
                   },
                   icon: const Icon(Icons.download_rounded, size: 16),
-                  label: const Text('Import from Cipher'),
+                  label: const Text('Reload settings'),
                 ),
               ],
             ),
@@ -980,7 +980,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                     label: 'Ollama API Key (Cloud)',
                     value: cfg.ollamaApiKey,
                     obscure: true,
-                    hint: 'Imported from Cipher .env',
+                    hint: 'Set in %USERPROFILE%\\.appbridge\\agent.env',
                     onChanged: (v) => cfg.ollamaApiKey = v,
                   ),
                 ],

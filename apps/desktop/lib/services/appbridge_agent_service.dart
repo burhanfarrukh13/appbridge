@@ -27,8 +27,8 @@ class AgentConfig {
     this.ollamaBaseUrl = 'http://localhost:11434/api',
     this.actionModel = 'gemma4:31b',
     this.thinkingModel = 'qwen3:30b-a3b',
-    this.userName = 'Qureshi',
-    this.userHonorific = 'sahb',
+    this.userName = 'there',
+    this.userHonorific = '',
     this.useThinking = true,
     this.autoApprove = true,
     this.maxSteps = 10,
@@ -43,49 +43,65 @@ class AgentConfig {
 
   bool get isOllamaCloud => !isLocalMode && ollamaApiKey.isNotEmpty;
 
-  /// Load from D:\claude\cipher\backend\.env and local Appbridge config
-  static AgentConfig loadFromEnv() {
+  /// Load optional Appbridge agent settings from environment and agent.env.
+  static AgentConfig loadFromEnv({
+    Map<String, String>? environment,
+    String? envFilePath,
+  }) {
     final cfg = AgentConfig();
+    final env = environment ?? Platform.environment;
+    final values = <String, String>{};
 
-    // 1. Try reading D:\claude\cipher\backend\.env
+    final userProfile = env['USERPROFILE'] ?? env['HOME'] ?? '';
+    final defaultEnvPath = userProfile.isEmpty
+        ? null
+        : '$userProfile${Platform.pathSeparator}.appbridge${Platform.pathSeparator}agent.env';
+    final configuredEnvPath = envFilePath ?? env['APPBRIDGE_ENV_FILE'] ?? defaultEnvPath;
     try {
-      final cipherEnv = File('D:\\claude\\cipher\\backend\\.env');
-      if (cipherEnv.existsSync()) {
-        final lines = cipherEnv.readAsLinesSync();
-        for (final line in lines) {
-          final trimmed = line.trim();
-          if (trimmed.isEmpty || trimmed.startsWith('#')) continue;
-          final eqIdx = trimmed.indexOf('=');
-          if (eqIdx <= 0) continue;
-          final key = trimmed.substring(0, eqIdx).trim();
-          final val = trimmed.substring(eqIdx + 1).trim();
-
-          switch (key) {
-            case 'OLLAMA_API_KEY':
-              if (val.isNotEmpty) cfg.ollamaApiKey = val;
-              break;
-            case 'OLLAMA_URL':
-              if (val.isNotEmpty) cfg.ollamaBaseUrl = val;
-              break;
-            case 'OLLAMA_MODEL':
-              if (val.isNotEmpty) cfg.actionModel = val;
-              break;
-            case 'OLLAMA_THINKING_MODEL':
-              if (val.isNotEmpty) cfg.thinkingModel = val;
-              break;
-            case 'USER_NAME':
-              if (val.isNotEmpty) cfg.userName = val;
-              break;
-            case 'USER_HONORIFIC':
-              if (val.isNotEmpty) cfg.userHonorific = val;
-              break;
-            case 'CIPHER_ALWAYS_UNRESTRICTED':
-              cfg.autoApprove = val.toLowerCase() == 'true';
-              break;
+      if (configuredEnvPath != null) {
+        final agentEnv = File(configuredEnvPath);
+        if (agentEnv.existsSync()) {
+          final lines = agentEnv.readAsLinesSync();
+          for (final line in lines) {
+            final trimmed = line.trim();
+            if (trimmed.isEmpty || trimmed.startsWith('#')) continue;
+            final eqIdx = trimmed.indexOf('=');
+            if (eqIdx <= 0) continue;
+            values[trimmed.substring(0, eqIdx).trim()] =
+                trimmed.substring(eqIdx + 1).trim();
           }
         }
       }
     } catch (_) {}
+
+    values.addAll(env);
+    for (final entry in values.entries) {
+      final key = entry.key;
+      final val = entry.value;
+      switch (key) {
+        case 'OLLAMA_API_KEY':
+          if (val.isNotEmpty) cfg.ollamaApiKey = val;
+          break;
+        case 'OLLAMA_URL':
+          if (val.isNotEmpty) cfg.ollamaBaseUrl = val;
+          break;
+        case 'OLLAMA_MODEL':
+          if (val.isNotEmpty) cfg.actionModel = val;
+          break;
+        case 'OLLAMA_THINKING_MODEL':
+          if (val.isNotEmpty) cfg.thinkingModel = val;
+          break;
+        case 'USER_NAME':
+          if (val.isNotEmpty) cfg.userName = val;
+          break;
+        case 'USER_HONORIFIC':
+          cfg.userHonorific = val;
+          break;
+        case 'APPBRIDGE_AUTO_APPROVE':
+          cfg.autoApprove = val.toLowerCase() == 'true';
+          break;
+      }
+    }
 
     // If API key is present, default to cloud; otherwise default to local
     if (cfg.ollamaApiKey.isNotEmpty && cfg.ollamaBaseUrl.contains('localhost')) {

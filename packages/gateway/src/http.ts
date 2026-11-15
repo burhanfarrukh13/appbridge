@@ -3,6 +3,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from "node:http";
 import { okResult, failResult, type ActionResult } from "@appbridge/core";
 import type { Bridge } from "./bridge.js";
+import { APPBRIDGE_VERSION } from "./version.js";
 
 const MAX_BODY_BYTES = 2 * 1024 * 1024;
 
@@ -130,7 +131,7 @@ function openApiDocument(port: number): Record<string, unknown> {
     openapi: "3.1.0",
     info: {
       title: "Appbridge local gateway",
-      version: "0.1.0",
+      version: APPBRIDGE_VERSION,
       description:
         "Loopback REST surface for the Appbridge Floor. Every action passes the same Action Firewall as MCP. Bearer token required.",
     },
@@ -220,7 +221,7 @@ export async function startHttpGateway(bridge: Bridge, options: HttpOptions = {}
       return;
     }
     if (url.pathname === "/healthz") {
-      json(res, 200, { ok: true, service: "appbridge", version: "0.1.0" });
+      json(res, 200, { ok: true, service: "appbridge", version: APPBRIDGE_VERSION });
       return;
     }
     if (!sameOrigin(req, actualPort)) {

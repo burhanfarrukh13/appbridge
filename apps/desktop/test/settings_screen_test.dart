@@ -73,7 +73,9 @@ void main() {
     expect(find.text('Credentials'), findsOneWidget);
     expect(find.text('Unclassified actions'), findsOneWidget);
 
-    await tester.tap(find.byKey(const ValueKey('policy-destructive')));
+    await tester.tap(
+      find.byKey(const ValueKey('policy-destructive-approve')),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.text('Always block').last);
     await tester.pumpAndSettle();

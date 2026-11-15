@@ -1,87 +1,78 @@
-# Publishing checklist
+# Publishing and release process
 
-Everything here is done once, by the maintainer. The repository is prepared; what remains is
-creating it on GitHub, pointing the metadata at it, and tagging the release.
+Appbridge is already public at
+[`burhanfarrukh13/appbridge`](https://github.com/burhanfarrukh13/appbridge). The repository
+uses version tags as release triggers; pushing a `vX.Y.Z` tag runs the Windows release
+workflow, which tests the code, builds the desktop app, packages the portable ZIP, and
+publishes a GitHub pre-release with the ZIP and SHA-256 checksum.
 
-## 1. Pre-flight
+## Before tagging
 
-```bash
-npm run check            # build + 47 tests + universality lint
-npm run build
-node packages/cli/dist/index.js doctor
-git status               # must be clean
+1. Update all root/workspace package versions, internal workspace dependency versions,
+   `apps/desktop/pubspec.yaml`, the desktop version label, and `CHANGELOG.md`.
+2. Verify a clean build and tests:
+
+   ```powershell
+   npm ci
+   npm run check
+   Push-Location apps/desktop
+   flutter pub get --enforce-lockfile
+   flutter test
+   flutter analyze
+   Pop-Location
+   ```
+
+3. Ensure the release notes describe shipped behavior and known limits. The release workflow
+   uses the matching changelog section.
+4. Merge the changes to `main` and verify the CI checks pass.
+
+## Build a portable Windows ZIP locally
+
+On Windows with Node.js, npm, Flutter, and Visual Studio C++ desktop tools installed:
+
+```powershell
+npm ci
+npm run check
+Push-Location apps/desktop
+flutter pub get --enforce-lockfile
+flutter test
+flutter analyze
+flutter build windows --release --build-name 0.0.1 --build-number 1
+Pop-Location
+.\scripts\package-windows-release.ps1 -Version 0.0.1
 ```
 
-`doctor` may report a broken audit chain if you reused an old `~/.appbridge` from before the
-lock fix. That is expected; run `appbridge audit rotate` to archive it.
+The package script validates the app versions, installs production workspace dependencies
+into a staging directory, includes the official Node.js binary and its license, checks the
+Node.js archive checksum, and emits `Appbridge-0.0.1-windows-x64.zip` plus a `.sha256` file
+under `.release\`. It does not publish or change Git state.
 
-## 2. Create the repository
+## Publish a release
 
-With the GitHub CLI:
+After merging and confirming CI is green:
 
-```bash
-gh auth login
-gh repo create appbridge --public --source=. --remote=origin --push
+```powershell
+git tag -a v0.0.1 -m "Appbridge 0.0.1"
+git push origin v0.0.1
 ```
 
-Or create an empty repository in the web UI, then:
+The `Windows release` workflow publishes the pre-release automatically. Confirm that the
+ZIP and checksum appear under the matching release and verify the checksum before
+redistribution. The release is Windows x64 only, unsigned, and pre-1.0.
 
-```bash
-git remote add origin https://github.com/<owner>/appbridge.git
-git push -u origin main
-```
+## Repository maintenance
 
-## 3. Fill in the real repository coordinates
+- **About:** use a concise description and relevant topics such as `computer-use`,
+  `desktop-automation`, `mcp`, `accessibility`, `windows`, `ai-agent`, and `safety`.
+- **Discussions:** keep enabled because the issue template links there; keep Issues enabled.
+- **Security:** keep secret scanning and push protection enabled, enable Dependabot security
+  updates and private vulnerability reporting.
+- **Branches:** protect `main`; require the `build · test · lint (Windows)` check and a pull
+  request, and disallow force pushes.
+- **Actions:** the CI and release workflows use GitHub-hosted runners and `GITHUB_TOKEN`;
+  no repository secrets are required.
+- **Social preview:** optional; add a 1280×640 image in repository settings when one is
+  available.
 
-Badges, clone URLs and package metadata use `OWNER/REPO` placeholders:
-
-```bash
-npm run repo:set -- <owner>/appbridge
-git add -A
-git commit -m "chore: point metadata at the repository"
-git push
-```
-
-This rewrites `README.md`, `CONTRIBUTING.md`, `SECURITY.md`, the issue-template links and all
-`package.json` repository fields, and enables the CI badge in the README.
-
-## 4. Repository settings
-
-- **About:** use the first line of the README as the description; add topics:
-  `computer-use`, `desktop-automation`, `mcp`, `accessibility`, `windows`, `ai-agent`,
-  `safety`.
-- **Social preview:** upload `docs/assets/architecture.svg` exported to PNG (1280×640).
-- **Features:** enable Discussions (the issue template links to it); keep Issues on.
-- **Security:** enable private vulnerability reporting (Security → Advisories) so
-  `SECURITY.md` has a working channel.
-- **Actions:** allow the workflow shipped in `.github/workflows/ci.yml`; it needs no secrets.
-- **Branches:** protect `main` — require the `build · test · lint (Windows)` check, require a
-  pull request, no force pushes.
-- **Releases:** enable tags; the release workflow is manual for now.
-
-## 5. Tag the first release
-
-```bash
-git tag -a v0.1.0 -m "v0.1.0 — first public slice"
-git push origin v0.1.0
-```
-
-Create a GitHub release from the tag and paste the `0.1.0` section of
-[`CHANGELOG.md`](../CHANGELOG.md). Mark it "pre-release" — the build is Windows-only and the
-API is not frozen.
-
-## 6. After publishing
-
-- Confirm the CI badge is green and the README renders (tables, SVG, code fences).
-- Check that `SETUP` works from a clean clone on a second machine:
-  `npm install && npm run build && appbridge doctor`.
-- Add the repository to the MCP server registry once packaging is sorted (gap_plan P0-4);
-  do not claim a one-command install before `npm i -g` actually ships the native host.
-- Keep the "Honest limits" section current. It is the main trust signal in this category.
-
-## Not ready to publish yet
-
-- **npm:** packages are `private`. `npm pack --dry-run` succeeds, but a published CLI must
-  ship `packages/floor/native/uia-host.ps1` and resolve workspace dependencies. Untested.
-- **Installers:** no signed MSI/zip, no `winget` manifest.
-- **macOS/Linux:** no drivers; do not advertise them.
+The app's native host supports Windows only. Do not describe the ZIP as an installer, a
+signed application, or a macOS/Linux build.

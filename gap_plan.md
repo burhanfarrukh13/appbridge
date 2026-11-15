@@ -6,7 +6,7 @@ order to close the rest.
 - **Analysis date:** 2026-11-15
 - **Scope:** public documentation, READMEs and release notes of adjacent projects; no
   hands-on benchmark was run against them.
-- **Appbridge baseline:** Windows-only build in this repository, 43 MCP tools, 47 tests.
+- **Appbridge baseline:** Windows-only build in this repository, 43 MCP tools, 48 tests.
 
 ---
 
@@ -217,7 +217,7 @@ Severity is about *user-visible risk or adoption*, not implementation size.
 ## 7. Verification for this pass
 
 ```text
-npm run check                     build + 47 tests + universality lint — pass
+npm run check                     build + 48 tests + universality lint — pass
 npm run build                     tsc project references, strict — pass
 node packages/cli/dist/index.js doctor
                                   node, platform, config, policy, audit, kill switch,

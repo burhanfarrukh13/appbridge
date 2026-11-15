@@ -1,16 +1,44 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:appbridge_desktop/services/appbridge_agent_service.dart';
 import 'package:appbridge_desktop/services/appbridge_client.dart';
 
 void main() {
   group('AppbridgeAgentService Tests', () {
-    test('AgentConfig defaults, timeouts, and cipher env loading', () {
+    test('AgentConfig defaults and environment loading', () {
       final config = AgentConfig.loadFromEnv();
       expect(config.userAddress, isNotEmpty);
       expect(config.thinkingModel, isNotEmpty);
       expect(config.actionModel, isNotEmpty);
       expect(config.maxSteps, greaterThan(0));
       expect(config.timeoutSeconds, greaterThanOrEqualTo(300));
+    });
+
+    test('AgentConfig loads .appbridge/agent.env and prefers process values', () {
+      final temp = Directory.systemTemp.createTempSync('appbridge-agent-env-');
+      addTearDown(() => temp.deleteSync(recursive: true));
+      final envFile = File('${temp.path}/agent.env')
+        ..writeAsStringSync(
+          'OLLAMA_API_KEY=file-key\n'
+          'OLLAMA_URL=https://ollama.com/api\n'
+          'USER_NAME=From file\n'
+          'APPBRIDGE_AUTO_APPROVE=false\n',
+        );
+
+      final config = AgentConfig.loadFromEnv(
+        environment: {
+          'USERPROFILE': temp.path,
+          'OLLAMA_API_KEY': 'process-key',
+        },
+        envFilePath: envFile.path,
+      );
+
+      expect(config.ollamaApiKey, 'process-key');
+      expect(config.ollamaBaseUrl, 'https://ollama.com/api');
+      expect(config.userName, 'From file');
+      expect(config.autoApprove, isFalse);
+      expect(config.userAddress, 'From file');
     });
 
     test('AgentActionStep serialization', () {

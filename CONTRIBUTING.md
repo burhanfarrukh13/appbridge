@@ -9,7 +9,7 @@ verify, and can it be stopped?**
 ```bash
 git clone https://github.com/burhanfarrukh13/appbridge.git appbridge
 cd appbridge
-npm install
+npm ci
 npm run build
 npm test
 ```
@@ -28,6 +28,16 @@ npm run desktop          # flutter run -d windows
 ```bash
 npm run check            # build + tests + universality lint
 appbridge doctor         # if you touched the native host or config
+```
+
+For desktop changes, also run the Flutter checks used by CI:
+
+```powershell
+Push-Location apps/desktop
+flutter pub get --enforce-lockfile
+flutter test
+flutter analyze
+Pop-Location
 ```
 
 A change is ready when:

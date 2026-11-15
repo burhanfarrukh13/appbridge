@@ -120,7 +120,7 @@ slice you can run end to end, not a complete product.
 ## Verified in this session
 
 - `npm run build` succeeds (TypeScript project references, strict mode).
-- `npm test`: 47 unit and integration tests pass across 6 test suites covering:
+- `npm test`: 48 unit and integration tests pass across 6 test suites covering:
   - Scene stability, diffing, risk classification, untrusted text & prompt injection scanning
   - OCR line fusion and duplicate label deduplication
   - Cryptographic audit chain and tamper detection

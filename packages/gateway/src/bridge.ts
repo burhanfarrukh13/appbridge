@@ -63,6 +63,7 @@ import {
   type DialogInfo,
 } from "@appbridge/memory";
 import { classifyTerminalCommand, LocalComputerAccess, type TerminalShell } from "./local.js";
+import { APPBRIDGE_VERSION } from "./version.js";
 
 export interface TargetParams {
   window_id?: string;
@@ -1330,7 +1331,7 @@ export class Bridge {
       {
         halted: this.isHalted(),
         platform: this.driver.platform,
-        version: "0.1.0",
+        version: APPBRIDGE_VERSION,
         home: this.paths.home,
         egress: this.config.egress.mode,
         policy: this.config.policy,

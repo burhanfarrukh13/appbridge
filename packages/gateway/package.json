@@ -1,6 +1,6 @@
 {
   "name": "@appbridge/gateway",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "private": true,
   "type": "module",
   "main": "dist/index.js",
@@ -12,10 +12,10 @@
     }
   },
   "dependencies": {
-    "@appbridge/core": "0.1.0",
-    "@appbridge/floor": "0.1.0",
-    "@appbridge/memory": "0.1.0",
-    "@appbridge/safety": "0.1.0",
+    "@appbridge/core": "0.0.1",
+    "@appbridge/floor": "0.0.1",
+    "@appbridge/memory": "0.0.1",
+    "@appbridge/safety": "0.0.1",
     "@modelcontextprotocol/sdk": "^1.32.2",
     "zod": "^4.6.7"
   },

@@ -4,6 +4,18 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../models/models.dart';
 
+class _AppbridgeRuntime {
+  final String nodeExecutable;
+  final String cliPath;
+  final String workingDirectory;
+
+  const _AppbridgeRuntime({
+    required this.nodeExecutable,
+    required this.cliPath,
+    required this.workingDirectory,
+  });
+}
+
 class AppbridgeClient {
   String baseUrl = 'http://127.0.0.1:8787';
   String token = '';
@@ -30,6 +42,42 @@ class AppbridgeClient {
     }
   }
 
+  _AppbridgeRuntime? _findRuntime() {
+    final starts = [Directory.current, File(Platform.resolvedExecutable).parent];
+    final visited = <String>{};
+
+    for (final start in starts) {
+      var directory = start.absolute;
+      for (var depth = 0; depth < 12; depth++) {
+        if (visited.add(directory.path.toLowerCase())) {
+          for (final candidate in [
+            directory,
+            Directory('${directory.path}${Platform.pathSeparator}runtime'),
+          ]) {
+            final separator = Platform.pathSeparator;
+            final cliPath =
+                '${candidate.path}${separator}packages${separator}cli${separator}dist${separator}index.js';
+            if (!File(cliPath).existsSync()) continue;
+
+            final bundledNode =
+                '${candidate.path}${separator}node.exe';
+            return _AppbridgeRuntime(
+              nodeExecutable: File(bundledNode).existsSync() ? bundledNode : 'node',
+              cliPath: cliPath,
+              workingDirectory: candidate.path,
+            );
+          }
+        }
+
+        final parent = directory.parent;
+        if (parent.path == directory.path) break;
+        directory = parent;
+      }
+    }
+
+    return null;
+  }
+
   Map<String, String> get _headers => {
     'Content-Type': 'application/json',
     if (token.isNotEmpty) 'Authorization': 'Bearer $token',
@@ -50,16 +98,16 @@ class AppbridgeClient {
   }
 
   /// Start the Appbridge backend daemon locally if not already running.
-  Future<bool> startLocalDaemon({
-    String workingDir = 'D:\\claude\\appbridge',
-  }) async {
+  Future<bool> startLocalDaemon({String? workingDir}) async {
     if (await checkHealth()) return true;
 
     try {
+      final runtime = _findRuntime();
+      if (runtime == null) return false;
       await Process.start(
-        'node',
-        ['packages/cli/dist/index.js', 'serve', '--port', '8787'],
-        workingDirectory: workingDir,
+        runtime.nodeExecutable,
+        [runtime.cliPath, 'serve', '--port', '8787'],
+        workingDirectory: workingDir ?? runtime.workingDirectory,
         mode: ProcessStartMode.detached,
       );
 
@@ -264,7 +312,7 @@ class AppbridgeClient {
         kind: 'manual',
         detected: true,
         note:
-            'Connect via stdio command: "node packages/cli/dist/index.js mcp".',
+            'Connect with the stdio command shown in your client configuration.',
       ),
     ];
   }
@@ -369,15 +417,19 @@ class AppbridgeClient {
   /// Connect an AI client by writing its MCP config file.
   Future<Map<String, dynamic>> connectClient(
     String clientId, {
-    String workingDir = 'D:\\claude\\appbridge',
+    String? workingDir,
   }) async {
     try {
-      final res = await Process.run('node', [
-        'packages/cli/dist/index.js',
+      final runtime = _findRuntime();
+      if (runtime == null) {
+        return {'ok': false, 'error': 'Could not locate the Appbridge runtime.'};
+      }
+      final res = await Process.run(runtime.nodeExecutable, [
+        runtime.cliPath,
         'connect',
         '--client',
         clientId,
-      ], workingDirectory: workingDir);
+      ], workingDirectory: workingDir ?? runtime.workingDirectory);
       if (res.exitCode == 0) {
         return {'ok': true, 'output': res.stdout.toString()};
       } else {
@@ -391,15 +443,19 @@ class AppbridgeClient {
   /// Restore configuration backup for an AI client.
   Future<Map<String, dynamic>> undoClient(
     String clientId, {
-    String workingDir = 'D:\\claude\\appbridge',
+    String? workingDir,
   }) async {
     try {
-      final res = await Process.run('node', [
-        'packages/cli/dist/index.js',
+      final runtime = _findRuntime();
+      if (runtime == null) {
+        return {'ok': false, 'error': 'Could not locate the Appbridge runtime.'};
+      }
+      final res = await Process.run(runtime.nodeExecutable, [
+        runtime.cliPath,
         'connect',
         '--undo',
         clientId,
-      ], workingDirectory: workingDir);
+      ], workingDirectory: workingDir ?? runtime.workingDirectory);
       if (res.exitCode == 0) {
         return {'ok': true, 'output': res.stdout.toString()};
       } else {

@@ -72,13 +72,29 @@ library underneath is replaceable.
 
 ## Install
 
-Requires **Windows 10/11**, **Node.js ≥ 22.23.4**, and Windows PowerShell 5.1 (present by
-default; the native UI Automation host runs on it).
+The portable app targets **Windows 10/11 x64** and uses Windows PowerShell 5.1 (included
+with Windows) for native UI Automation.
+
+[Download the portable Windows app (0.0.1)](https://github.com/burhanfarrukh13/appbridge/releases/download/v0.0.1/Appbridge-0.0.1-windows-x64.zip)
+— extract the ZIP and run `appbridge_desktop.exe`. The desktop release includes its own
+backend and Node.js runtime, so it does not require a source checkout or a separate Node.js
+installation. This is a portable ZIP, not a signed installer; Windows may show its normal
+download warning for an unsigned app.
+
+On first launch, choose **Start Core Daemon** in Settings. Then edit
+`%USERPROFILE%\.appbridge\config.toml` and set `filesystem.roots` to the folders you want
+Appbridge to expose to its file and terminal tools. Those roots are an explicit access
+boundary; the ZIP does not grant access to the whole PC by default. Approval behavior for
+each action category is configurable in the same Settings screen.
+
+Source installation:
+
+Source builds additionally require **Node.js ≥ 22.23.4**.
 
 ```bash
 git clone https://github.com/burhanfarrukh13/appbridge.git appbridge
 cd appbridge
-npm install
+npm ci
 npm run build
 
 npm link          # optional: puts `appbridge` on your PATH
@@ -192,6 +208,9 @@ gap_plan.md          competitive gap analysis and roadmap
 
 `apps/desktop` is a Flutter app that talks to the loopback gateway: live dashboard, app
 list, approval queue, audit timeline, skill library, settings, and a chat panel.
+The portable Windows ZIP packages the desktop app with the production backend runtime. Keep
+the extracted folder in a stable location after connecting an AI client; client configs point
+to the runtime files inside that folder.
 
 ```bash
 appbridge serve                  # terminal 1
@@ -202,12 +221,14 @@ npm run desktop                 # terminal 2 (flutter run -d windows)
 
 ```bash
 npm run build             # tsc project references, strict mode
-npm test                  # 47 unit and integration tests
+npm test                  # 48 unit and integration tests
 npm run lint:universality # fails if an app or vendor name leaks into a package
 npm run check             # all three
 ```
 
 Tests use a `FakeDriver`, so the suite runs without a desktop session.
+Desktop changes should also pass `flutter test` and `flutter analyze` from
+`apps/desktop`.
 
 ## Platform support
 
