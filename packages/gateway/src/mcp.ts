@@ -69,7 +69,6 @@ const READ_ONLY_TOOLS = new Set([
   "screen.capture",
   "ui.find",
   "apps.list",
-  "apps.describe",
   "window.list",
   "clipboard.get",
   "filesystem.roots",
@@ -83,13 +82,29 @@ const READ_ONLY_TOOLS = new Set([
   "dialog.list",
   "memory.store.get",
   "memory.store.list",
-  "inventory",
 ]);
 
 /** Tools that can reach outside this machine or start new processes. */
 const OPEN_WORLD_TOOLS = new Set(["app.launch", "terminal.run"]);
 
-const IDEMPOTENT_TOOLS = new Set(["window.focus", "window.action"]);
+const IDEMPOTENT_TOOLS = new Set(["window.focus"]);
+
+/** Tools that can destroy or overwrite state, or run an arbitrary command. */
+const DESTRUCTIVE_TOOLS = new Set([
+  "ui.click",
+  "ui.type",
+  "ui.key",
+  "ui.set_value",
+  "ui.drag",
+  "ui.scroll",
+  "window.action",
+  "clipboard.set",
+  "filesystem.write",
+  "filesystem.edit",
+  "terminal.run",
+  "app.launch",
+  "dialog.handle",
+]);
 
 const SERVER_INSTRUCTIONS = [
   "Appbridge drives real desktop applications through accessibility and input synthesis.",
@@ -123,7 +138,7 @@ export function createMcpServer(bridge: Bridge): McpServer {
           readOnlyHint: READ_ONLY_TOOLS.has(name),
           openWorldHint: OPEN_WORLD_TOOLS.has(name) ? true : undefined,
           idempotentHint: IDEMPOTENT_TOOLS.has(name) ? true : undefined,
-          destructiveHint: READ_ONLY_TOOLS.has(name) ? false : undefined,
+          destructiveHint: DESTRUCTIVE_TOOLS.has(name),
         },
       } as never,
       handler as never,

@@ -42,10 +42,10 @@ focused window. Use `apps.list` first when unsure.
 | `screen.capture` | PNG screenshot (attached as image content) | `window_id`/`window_title`, `region`, `scale` | yes |
 | `ui.find` | Search the Scene by name/automation id | `query`, `role`, `limit`, window target | yes |
 | `apps.list` | Visible top-level windows with process, pid, bounds, focus | — | yes |
-| `apps.describe` | Learn/inspect one app: Playbook, technology, risk map | window target, `notes` | yes |
+| `apps.describe` | Learn/inspect one app: Playbook, technology, risk map | window target, `notes` | writes a Playbook |
 | `window.list` | Window list (same data as `apps.list`) | — | yes |
 | `dialog.list` | Detect and classify dialogs in the target window | window target | yes |
-| `inventory` | Write `~/.appbridge/device.json` with windows and processes | — | yes |
+| `inventory` | Write `~/.appbridge/device.json` with windows and processes | — | writes a file |
 
 `screen.describe` returns `children_omitted: true` on containers whose content is outside the
 snapshot. Drill in with `root: "<id>"` instead of raising `max_depth` and paying for the whole
