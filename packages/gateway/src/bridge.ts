@@ -424,7 +424,12 @@ export class Bridge {
       if (params.root) {
         const target = await this.pickWindow(params);
         if (!this.registry.resolve(params.root, target.id)) {
-          await this.observe({ ...params, root: undefined, skip_ocr: true, max_depth: 3 });
+          await this.observe({
+            ...params,
+            root: undefined,
+            skip_ocr: true,
+            max_depth: this.config.scene.max_depth,
+          });
         }
       }
       const { scene, window } = await this.observe(params);
