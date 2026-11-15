@@ -148,8 +148,9 @@ class AppbridgeClient {
   Future<bool> focusWindow(String windowId, [String? title]) async {
     final args = <String, dynamic>{};
     if (windowId.trim().isNotEmpty) args['window_id'] = windowId.trim();
-    if (title != null && title.trim().isNotEmpty)
+    if (title != null && title.trim().isNotEmpty) {
       args['window_title'] = title.trim();
+    }
     final res = await callTool('window.focus', args);
     return res['ok'] == true;
   }
