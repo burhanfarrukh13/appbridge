@@ -108,3 +108,8 @@ Do not open a public issue for a vulnerability. See [`SECURITY.md`](./SECURITY.m
 ## Code of conduct
 
 Participation is covered by [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md).
+
+## Maintainers
+
+Repository creation, metadata, branch protection and release steps are in
+[`docs/publishing.md`](./docs/publishing.md).
