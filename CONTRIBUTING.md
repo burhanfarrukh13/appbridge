@@ -7,7 +7,7 @@ verify, and can it be stopped?**
 ## Setup
 
 ```bash
-git clone https://github.com/OWNER/REPO.git appbridge
+git clone https://github.com/burhanfarrukh13/appbridge.git appbridge
 cd appbridge
 npm install
 npm run build

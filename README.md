@@ -9,9 +9,7 @@
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D6.svg)](#platform-support)
 [![MCP](https://img.shields.io/badge/MCP-stdio%20%2B%20REST-6E56CF.svg)](./docs/mcp-tools.md)
 
-<!-- After you create the GitHub repo, enable the CI badge:
-[![CI](https://github.com/OWNER/REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/ci.yml)
--->
+[![CI](https://github.com/burhanfarrukh13/appbridge/actions/workflows/ci.yml/badge.svg)](https://github.com/burhanfarrukh13/appbridge/actions/workflows/ci.yml)
 
 </div>
 
@@ -78,7 +76,7 @@ Requires **Windows 10/11**, **Node.js ≥ 22.23.4**, and Windows PowerShell 5.1 
 default; the native UI Automation host runs on it).
 
 ```bash
-git clone https://github.com/OWNER/REPO.git appbridge
+git clone https://github.com/burhanfarrukh13/appbridge.git appbridge
 cd appbridge
 npm install
 npm run build

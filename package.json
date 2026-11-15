@@ -33,11 +33,11 @@
   "author": "Burhan Qureshi",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/OWNER/REPO.git"
+    "url": "git+https://github.com/burhanfarrukh13/appbridge.git"
   },
-  "homepage": "https://github.com/OWNER/REPO#readme",
+  "homepage": "https://github.com/burhanfarrukh13/appbridge#readme",
   "bugs": {
-    "url": "https://github.com/OWNER/REPO/issues"
+    "url": "https://github.com/burhanfarrukh13/appbridge/issues"
   },
   "keywords": [
     "computer-use",

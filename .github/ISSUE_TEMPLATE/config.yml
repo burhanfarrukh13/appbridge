@@ -1,11 +1,11 @@
 blank_issues_enabled: false
 contact_links:
   - name: Security vulnerability
-    url: https://github.com/OWNER/REPO/security/advisories/new
+    url: https://github.com/burhanfarrukh13/appbridge/security/advisories/new
     about: Report privately. Do not open a public issue for vulnerabilities.
   - name: Question or idea
-    url: https://github.com/OWNER/REPO/discussions
+    url: https://github.com/burhanfarrukh13/appbridge/discussions
     about: Ask a question, share a Playbook, or discuss a design.
   - name: Roadmap and known gaps
-    url: https://github.com/OWNER/REPO/blob/main/gap_plan.md
+    url: https://github.com/burhanfarrukh13/appbridge/blob/main/gap_plan.md
     about: Check what is already planned before filing a feature request.

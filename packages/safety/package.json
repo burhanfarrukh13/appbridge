@@ -18,8 +18,8 @@
   "author": "Burhan Qureshi",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/OWNER/REPO.git",
+    "url": "git+https://github.com/burhanfarrukh13/appbridge.git",
     "directory": "packages/safety"
   },
-  "homepage": "https://github.com/OWNER/REPO/tree/main/packages/safety#readme"
+  "homepage": "https://github.com/burhanfarrukh13/appbridge/tree/main/packages/safety#readme"
 }

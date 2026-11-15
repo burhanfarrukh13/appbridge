@@ -23,8 +23,8 @@
   "author": "Burhan Qureshi",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/OWNER/REPO.git",
+    "url": "git+https://github.com/burhanfarrukh13/appbridge.git",
     "directory": "packages/gateway"
   },
-  "homepage": "https://github.com/OWNER/REPO/tree/main/packages/gateway#readme"
+  "homepage": "https://github.com/burhanfarrukh13/appbridge/tree/main/packages/gateway#readme"
 }
