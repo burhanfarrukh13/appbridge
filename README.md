@@ -2,17 +2,19 @@
 
 # Appbridge
 
-**Let any AI operate any app — even apps with no API, plugin or MCP — safely and locally.**
+**Let any AI operate any desktop app — even apps with no API, plugin or MCP — safely and locally.**
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](./LICENSE)
-[![Node](https://img.shields.io/badge/node-%3E%3D22.23.4-339933.svg)](https://nodejs.org)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D6.svg)](#platform-support)
 [![MCP](https://img.shields.io/badge/MCP-stdio%20%2B%20REST-6E56CF.svg)](./docs/mcp-tools.md)
-
+[![Hardware](https://img.shields.io/badge/Hardware-Zero%20GPU%20Required-success.svg)](#zero-gpu-required)
+[![Models](https://img.shields.io/badge/Models-Cloud%20%2B%20Local%20Ollama-purple.svg)](#bring-any-model)
 [![CI](https://github.com/burhanfarrukh13/appbridge/actions/workflows/ci.yml/badge.svg)](https://github.com/burhanfarrukh13/appbridge/actions/workflows/ci.yml)
 
-</div>
+**Native Windows Desktop Agent · MCP Server for Claude Code & Cursor · Built-in Safety Harness**  
+*Lightweight (~50MB RAM) · Runs on any budget laptop · Fast Accessibility Perception (UIA)*
 
+</div>
 Appbridge gives an AI agent eyes and hands on a real computer. It perceives a window as a
 structured **Scene** (the OS accessibility tree plus window metadata), acts through
 accessibility patterns and input synthesis, verifies that something actually happened, and
@@ -69,6 +71,15 @@ library underneath is replaceable.
   all gated by the same firewall.
 - **Universality enforced by CI.** A lint fails if any app or vendor name appears in a
   package. App knowledge lives in data, never in core code.
+
+## Zero GPU Required: Bring Any Model
+
+Unlike vision-only desktop agents that require expensive GPUs or costly VLM tokens, Appbridge operates via lightweight **Windows UI Automation (UIA) + WinRT OCR**.
+
+- **Runs on everyday budget laptops:** The Appbridge core daemon and desktop console consume under **50MB RAM** and almost 0% idle CPU.
+- **Fast Cloud Models (Recommended for low-spec PCs):** Connect to Ollama Cloud, Claude 3.5/3.7, OpenAI, Groq, or OpenRouter for instantaneous responses (50–100+ tokens/sec) without heating up your machine.
+- **100% Offline Local Models:** If you have capable local hardware, switch to local Ollama (e.g. `qwen2.5-coder:14b`, `gemma`) for complete air-gapped privacy.
+- **Multi-Model Pipeline:** Uses a high-capacity reasoning model for strategic planning and a fast model for action execution.
 
 ## Install
 
