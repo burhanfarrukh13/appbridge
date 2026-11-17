@@ -16,7 +16,7 @@
 Appbridge gives an AI agent eyes and hands on a real computer. It perceives a window as a
 structured **Scene** (the OS accessibility tree plus window metadata), acts through
 accessibility patterns and input synthesis, verifies that something actually happened, and
-puts every irreversible action behind a human approval.
+applies configurable safety policy with human approval for actions that require it.
 
 No model account, cloud service, telemetry or internet connection is required to run it.
 You bring the model; Appbridge provides the body, the senses, and the brakes.
@@ -60,9 +60,12 @@ library underneath is replaceable.
 - **Verification built in.** `wait_for` supports `element_appears`, `element_disappears`,
   `value_equals`, `window_title_contains` and `file_exists`.
 - **A real safety harness.** Effect classification in multiple languages, one-shot and
-  time-boxed approvals, credential handoff, kill switch, append-only hash-chained audit.
-- **Local files and terminals.** Root-scoped file tools plus approval-gated, time-limited,
-  non-interactive shell commands.
+  time-boxed approvals, credential handoff, kill switch, append-only hash-chained audit,
+  and a per-machine `[tools] deny` list that removes whole tools before they reach the
+  driver.
+- **Local files and terminals.** An AI can read, search, create, and edit files in the
+  configured roots, and run commands in detected shells such as PowerShell, cmd, bash, and
+  WSL. Code-executing and unclassified commands require approval by default.
 - **Memory that compounds.** Playbooks per app, recorded Teach-mode trajectories compiled
   into declarative Skills, and shareable App Packs with secret sanitization and checksums.
 - **One core, three interfaces.** MCP stdio, a loopback REST + OpenAPI gateway, and a CLI —
@@ -70,12 +73,16 @@ library underneath is replaceable.
 - **Universality enforced by CI.** A lint fails if any app or vendor name appears in a
   package. App knowledge lives in data, never in core code.
 
+File tools are limited to `[filesystem].roots`. Terminal commands run with the current
+Windows account's permissions; roots constrain the working directory, **not** what a shell
+command can access. Appbridge is not a shell sandbox.
+
 ## Install
 
 The portable app targets **Windows 10/11 x64** and uses Windows PowerShell 5.1 (included
 with Windows) for native UI Automation.
 
-[Download the portable Windows app (0.0.1)](https://github.com/burhanfarrukh13/appbridge/releases/download/v0.0.1/Appbridge-0.0.1-windows-x64.zip)
+[Download the portable Windows app (0.0.2)](https://github.com/burhanfarrukh13/appbridge/releases/download/v0.0.2/Appbridge-0.0.2-windows-x64.zip)
 — extract the ZIP and run `appbridge_desktop.exe`. The desktop release includes its own
 backend and Node.js runtime, so it does not require a source checkout or a separate Node.js
 installation. This is a portable ZIP, not a signed installer; Windows may show its normal
@@ -83,13 +90,18 @@ download warning for an unsigned app.
 
 On first launch, choose **Start Core Daemon** in Settings. Then edit
 `%USERPROFILE%\.appbridge\config.toml` and set `filesystem.roots` to the folders you want
-Appbridge to expose to its file and terminal tools. Those roots are an explicit access
-boundary; the ZIP does not grant access to the whole PC by default. Approval behavior for
-each action category is configurable in the same Settings screen.
+Appbridge to expose to file tools and use as terminal working directories. File operations
+stay within those roots, but shell commands run with your Windows account's permissions and
+may access other files. Do not treat roots as a terminal sandbox. Approval behavior for each
+action category is configurable in the same Settings screen.
 
 Source installation:
 
 Source builds additionally require **Node.js ≥ 22.23.4**.
+
+The workspace packages are publish-ready (no `private` flag, explicit `files`, the native
+host in `@appbridge/floor`'s tarball); `npm run pack:check` proves every tarball installs.
+The packages have not been published to npm, so `npm i -g` is not a documented install path.
 
 ```bash
 git clone https://github.com/burhanfarrukh13/appbridge.git appbridge
@@ -102,8 +114,11 @@ appbridge init     # creates ~/.appbridge/config.toml
 appbridge doctor   # checks Node, config, policy, audit chain, native host, OCR
 ```
 
-Nothing leaves the machine. `~/.appbridge/` holds config, approvals, audit records, and
-memory.
+The Appbridge gateway has no telemetry and stores its configuration, approvals, audit
+records, and memory in `~/.appbridge/`. However, data returned by screen and file tools is
+sent to the connected AI client, whose provider may process it under its own terms. The
+optional desktop chat can also send prompts and tool context to Ollama Cloud when configured.
+Use a local model and review your AI provider's data policy if local-only processing matters.
 
 ## Quick start
 
@@ -136,7 +151,37 @@ appbridge serve
 # OpenAPI: http://127.0.0.1:8787/v1/openapi.json
 ```
 
-See [`docs/mcp-tools.md`](./docs/mcp-tools.md) for all 43 tools.
+See [`docs/mcp-tools.md`](./docs/mcp-tools.md) for the agent tools and operator controls.
+
+To run with a smaller surface, add the tools the agent may not call to `[tools] deny`:
+
+```toml
+[tools]
+deny = ["terminal.run", "app.launch"]   # or a whole group: "terminal"
+```
+
+Denied calls return `class: "blocked"` without touching the driver, and `session.status`
+reports `tools_denied` so the agent knows its posture instead of guessing.
+
+## Agent skill
+
+[`skill/appbridge-computer-use`](./skill/appbridge-computer-use/SKILL.md) is a SKILL.md
+package for the agent itself: preflight checks, the perceive → act → verify loop, how to
+read a Scene without burning context, how to handle an approval request, and the failure
+modes that are specific to Windows. It is instructions only — no scripts, no installers,
+no network calls.
+
+```bash
+npm run package:skill   # validates the package, writes .release/appbridge-computer-use-<version>.zip
+```
+
+The validator enforces the marketplace rules the repository does not otherwise check: one
+top-level folder with `SKILL.md` at its root, real frontmatter, an instruction body, text
+files only, and no secrets, obfuscation or install commands.
+
+Not to be confused with an Appbridge **Skill** (`skill.compile`), which is a declarative
+automation for one app compiled from a recording. The SKILL.md is guidance for an agent;
+the Appbridge Skill is a replayable procedure.
 
 ## Safety model
 
@@ -200,8 +245,6 @@ packages/cli         the `appbridge` command
 apps/desktop         Flutter desktop console (dashboard, chat, approvals, audit)
 scripts              Universality Contract lint
 docs                 status, architecture, tool reference, publishing checklist
-plan.md              the long-form design plan behind the implementation
-gap_plan.md          competitive gap analysis and roadmap
 ```
 
 ## Desktop console
@@ -221,9 +264,11 @@ npm run desktop                 # terminal 2 (flutter run -d windows)
 
 ```bash
 npm run build             # tsc project references, strict mode
-npm test                  # 48 unit and integration tests
+npm test                  # 53 unit and integration tests
 npm run lint:universality # fails if an app or vendor name leaks into a package
-npm run check             # all three
+npm run pack:check        # every workspace tarball contains what install needs
+npm run check             # all four
+npm run package:skill     # validate the agent skill and build its submission zip
 ```
 
 Tests use a `FakeDriver`, so the suite runs without a desktop session.
@@ -254,9 +299,8 @@ The driver interface is deliberately small (`listWindows`, `getTree`, `invoke`, 
 - **Not a bypass.** Appbridge does not solve CAPTCHAs, break DRM, or cross security
   boundaries. Use it only on apps, accounts and data you are authorized to use.
 
-The full matrix, including what is measured versus assumed, is in
-[`docs/status.md`](./docs/status.md). The competitive gap analysis and roadmap are in
-[`gap_plan.md`](./gap_plan.md).
+Benchmark results are not published until measured; see the
+[`benchmark protocol`](./docs/benchmarks.md).
 
 ## Contributing
 

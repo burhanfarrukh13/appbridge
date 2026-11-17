@@ -1,8 +1,9 @@
 # Tool reference
 
-Appbridge exposes the same 43 tools over MCP stdio, the loopback REST gateway, and the CLI
-(`appbridge call <tool> '<json>'`). Every tool returns the same envelope and passes the same
-firewall.
+Appbridge exposes agent-callable tools over MCP stdio, the loopback REST gateway, and the
+CLI (`appbridge call <tool> '<json>'`). These tools share the same firewall. The CLI and
+desktop app also provide operator-only approval and kill-switch controls that are not
+available as agent tools.
 
 ## Result envelope
 
@@ -24,8 +25,8 @@ firewall.
 
 `class: "needs_human"` includes an `approval` object with an id. The human grants it
 out-of-band (`appbridge approvals approve <id> --once`), then the agent retries the same
-call. Retrying before the grant returns another `needs_human`, which is the correct
-behaviour: the model cannot self-approve.
+call. Retrying before the grant returns another `needs_human`. Approval decisions and
+kill-switch resume are operator controls, not agent tools.
 
 ## Window targeting
 
@@ -93,10 +94,11 @@ content is untrusted data.
 | `terminal.list` | Detected shells (PowerShell, cmd, bash, sh, zsh, WSL) | — |
 | `terminal.run` | One non-interactive command with timeout and output cap | `shell`, `command`, `cwd`, `timeout_ms` |
 
-Routine read/build/test commands run without prompting. Destructive, privileged,
-external-effect, chained or unclassified commands require approval or human handoff. Runs are
-audited. The working directory must be inside an approved root; the command itself inherits
-your OS account's permissions, so approve carefully.
+Read-only commands may run without prompting. Build and test commands execute project code
+and require approval by default. Destructive, privileged, external-effect, chained or
+unclassified commands require approval or human handoff. Runs are audited. The working
+directory must be inside an approved root; the command itself inherits your OS account's
+permissions and can access files outside those roots. Appbridge is not a shell sandbox.
 
 ## Session and governance
 
@@ -104,9 +106,11 @@ your OS account's permissions, so approve carefully.
 |---|---|---|
 | `session.status` | Session, policy, halt state, pending approvals | — |
 | `session.stop` | Kill switch on | — |
-| `session.resume` | Kill switch off | — |
 | `audit.tail` | Recent audit records | `limit` |
 | `dialog.handle` | Act on a detected dialog (`dismiss`, `accept`, `choose_path`, …) | `dialog_id`, `action`, `button`, `path` |
+
+The human resumes with `appbridge resume` or the desktop control. The agent cannot grant
+approvals or clear the kill switch.
 
 ## Memory and skills
 
@@ -129,6 +133,23 @@ Tools declare `readOnlyHint` where true (perception, filesystem reads, `session.
 `window.focus` and `window.action`. Clients that hide or auto-approve read-only tools rely on
 these hints; they are advisory only. The Action Firewall is the authority.
 
+## Tool posture
+
+A machine can refuse tools before they reach the driver:
+
+```toml
+# ~/.appbridge/config.toml
+[tools]
+deny = ["terminal.run", "app.launch"]   # a group name ("terminal") disables all of it
+```
+
+A denied call returns the normal envelope with `class: "blocked"`, `route: "policy"` and a
+`next` that says the human has to change the config. It applies to MCP, REST and the CLI
+alike, and `session.status` lists the denied entries in `tools_denied` so a client can
+report its posture instead of probing. `doctor` reports the posture too, and flags denying
+the `session`, `audit` or `screen` groups because that removes the agent's ability to stop
+itself or read its own audit.
+
 ## REST mapping
 
 Every tool is available as `POST /v1/tools/<tool>` with the same JSON body and a bearer token:
@@ -140,8 +161,10 @@ curl -s -X POST http://127.0.0.1:8787/v1/tools/screen.describe \
   -d '{"window_title":"Untitled - Notepad","max_depth":3}'
 ```
 
-`GET /v1/status`, `GET /v1/approvals`, `POST /v1/approvals/:id`, `GET /v1/openapi.json` and
-`GET /healthz` round out the gateway. See `packages/gateway/src/http.ts` for the exact routes.
+`GET /v1/status`, `GET /v1/approvals`, `POST /v1/approvals/:id`, `POST /v1/resume`,
+`GET /v1/openapi.json` and `GET /healthz` round out the gateway. Approval and resume routes
+are operator controls; do not expose them as model tools. See `packages/gateway/src/http.ts`
+for the exact routes.
 
 ## CLI equivalents
 

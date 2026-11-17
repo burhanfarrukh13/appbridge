@@ -17,7 +17,6 @@ class AgentConfig {
   String userName;
   String userHonorific;
   bool useThinking;
-  bool autoApprove;
   int maxSteps;
   int timeoutSeconds; // High timeout for slow local models (default 300s = 5m)
   bool isLocalMode;
@@ -30,7 +29,6 @@ class AgentConfig {
     this.userName = 'there',
     this.userHonorific = '',
     this.useThinking = true,
-    this.autoApprove = true,
     this.maxSteps = 10,
     this.timeoutSeconds = 300,
     this.isLocalMode = false,
@@ -97,9 +95,6 @@ class AgentConfig {
         case 'USER_HONORIFIC':
           cfg.userHonorific = val;
           break;
-        case 'APPBRIDGE_AUTO_APPROVE':
-          cfg.autoApprove = val.toLowerCase() == 'true';
-          break;
       }
     }
 
@@ -125,7 +120,6 @@ class AgentConfig {
         'userName': userName,
         'userHonorific': userHonorific,
         'useThinking': useThinking,
-        'autoApprove': autoApprove,
         'maxSteps': maxSteps,
         'timeoutSeconds': timeoutSeconds,
         'isLocalMode': isLocalMode,
@@ -139,7 +133,6 @@ class AgentConfig {
     if (j['userName'] is String) userName = j['userName'] as String;
     if (j['userHonorific'] is String) userHonorific = j['userHonorific'] as String;
     if (j['useThinking'] is bool) useThinking = j['useThinking'] as bool;
-    if (j['autoApprove'] is bool) autoApprove = j['autoApprove'] as bool;
     if (j['maxSteps'] is int) maxSteps = j['maxSteps'] as int;
     if (j['timeoutSeconds'] is int) timeoutSeconds = j['timeoutSeconds'] as int;
     if (j['isLocalMode'] is bool) isLocalMode = j['isLocalMode'] as bool;

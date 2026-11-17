@@ -33,10 +33,10 @@ and in the next tagged release; there are no long-lived backport branches yet.
 | Irreversible effects require a human grant by default | A user who sets an effect to `allow` in `config.toml` removes that protection |
 | Credential and privileged effects are handoff-only | The user can change policy, but Appbridge will not type a password for the model |
 | Audit records are append-only and hash-chained | A local process with write access to `~/.appbridge/audit.jsonl` can delete the file; deletion is detectable only if you keep the chain elsewhere |
-| Approvals cannot be granted by the model | Approvals are files written by the CLI; a local process with the same OS user can write them too |
+| Agent tool dispatch cannot grant approvals or clear the kill switch | Operator controls are separate from agent tools; a local process with the gateway bearer token can still call operator routes |
 | Gateway is loopback-only with a bearer token, Host/Origin checks and no wildcard CORS | Any local process that can read `~/.appbridge/gateway-token` can call the gateway |
-| File tools are root-scoped and do not follow symlinks | The terminal is deliberately more powerful: commands run with your OS account's permissions, so approve them carefully |
-| Kill switch stops every action | It is checked before each action, not inside an already-running shell command |
+| File tools are root-scoped and do not follow symlinks | Terminal commands run with your OS account's permissions; roots constrain only the working directory, not shell access |
+| Kill switch stops further actions | It is checked before each action, not inside an already-running shell command; only the human can resume |
 
 ## Threat model
 

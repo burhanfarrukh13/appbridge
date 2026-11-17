@@ -70,7 +70,7 @@ class KillSwitchHeader extends StatelessWidget {
                     ),
                     SizedBox(width: 8),
                     Text(
-                      'v0.0.1',
+                      'v0.0.2',
                       style: TextStyle(
                         fontSize: 12,
                         color: AppTheme.textMuted,

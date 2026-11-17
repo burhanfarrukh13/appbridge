@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.installer.1.6.0.schema.json
+# Portable ZIP: the whole folder is extracted, so the desktop EXE keeps its runtime/ and
+# data/ siblings. The alias only launches the console; the CLI is
+# runtime\node.exe runtime\packages\cli\dist\index.js (see INSTALL.md in the archive).
+PackageIdentifier: BurhanQureshi.Appbridge
+PackageVersion: 0.0.1
+MinimumOSVersion: 10.0.17763.0
+InstallerType: zip
+NestedInstallerType: portable
+NestedInstallerFiles:
+  - RelativeFilePath: appbridge_desktop.exe
+    PortableCommandAlias: appbridge-desktop
+Installers:
+  - Architecture: x64
+    InstallerUrl: https://github.com/burhanfarrukh13/appbridge/releases/download/v0.0.1/Appbridge-0.0.1-windows-x64.zip
+    InstallerSha256: F72D656AC32F94A012CD4F1CD0491D0DF6194B3E89C1F720F82EDB8E9EFC6358
+    ReleaseDate: 2026-11-15
+ManifestType: installer
+ManifestVersion: 1.6.0

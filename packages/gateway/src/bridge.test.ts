@@ -238,7 +238,7 @@ describe("Bridge Gateway with FakeDriver", () => {
     assert.ok(summaries.some((s) => s.id === "recorded-next-step"));
   });
 
-  it("provides scoped file access and approves only critical terminal commands", async () => {
+  it("provides scoped file access and requires approval before code-executing terminal commands", async () => {
     const root = join(tempHome, "workspace-files");
     mkdirSync(root);
     writeFileSync(join(root, "notes.txt"), "alpha\nbeta\n", "utf8");
@@ -307,6 +307,13 @@ describe("Bridge Gateway with FakeDriver", () => {
       assert.equal(routineCommand.ok, true);
       assert.ok((routineCommand.data as { stdout: string }).stdout.includes("appbridge-safe-test"));
 
+      const codeExecutingCommand = await localBridge.callTool("terminal.run", {
+        shell,
+        command: "npm test",
+      });
+      assert.equal(codeExecutingCommand.class, "needs_human");
+      assert.ok(codeExecutingCommand.approval?.id);
+
       const criticalCommand = await localBridge.callTool("terminal.run", {
         shell,
         command: "Remove-Item important.txt",
@@ -316,6 +323,66 @@ describe("Bridge Gateway with FakeDriver", () => {
     }
 
     await localBridge.close();
+  });
+
+  it("keeps approval decisions and kill-switch resume out of agent tool dispatch", async () => {
+    const guardedBridge = new Bridge({
+      home: join(tempHome, "operator-controls-bridge"),
+      driver: new FakeDriver(),
+    });
+
+    assert.equal((await guardedBridge.callTool("session.stop")).ok, true);
+    const refusedResume = await guardedBridge.callTool("session.resume");
+    assert.equal(refusedResume.class, "blocked");
+    const haltedStatus = await guardedBridge.status();
+    assert.equal(haltedStatus.ok, true);
+    assert.equal((haltedStatus.data as { halted: boolean }).halted, true);
+
+    const refusedApproval = await guardedBridge.callTool("approval.decide", {
+      id: "approval-that-must-not-be-granted",
+      decision: "granted",
+    });
+    assert.equal(refusedApproval.class, "blocked");
+
+    assert.equal((await guardedBridge.resume()).ok, true);
+    const resumedStatus = await guardedBridge.status();
+    assert.equal((resumedStatus.data as { halted: boolean }).halted, false);
+    await guardedBridge.close();
+  });
+
+  it("refuses tools disabled by [tools] deny and reports them in status", async () => {
+    const deniedBridge = new Bridge({
+      home: join(tempHome, "denied-bridge"),
+      driver: new FakeDriver(),
+      config: { ...DEFAULT_CONFIG, tools: { deny: ["terminal.run"] } },
+    });
+
+    const refused = await deniedBridge.callTool("terminal.run", {
+      shell: "cmd",
+      command: "echo appbridge-denied-test",
+    });
+    assert.equal(refused.ok, false);
+    assert.equal(refused.class, "blocked");
+    assert.ok(refused.reason?.includes("terminal.run"));
+
+    // Denying one tool leaves its siblings in the group available.
+    const listed = await deniedBridge.callTool("terminal.list");
+    assert.equal(listed.ok, true);
+
+    const status = await deniedBridge.callTool("session.status");
+    assert.deepEqual((status.data as { tools_denied: string[] }).tools_denied, ["terminal.run"]);
+
+    // A group entry covers every tool underneath it.
+    const groupBridge = new Bridge({
+      home: join(tempHome, "denied-group-bridge"),
+      driver: new FakeDriver(),
+      config: { ...DEFAULT_CONFIG, tools: { deny: ["terminal"] } },
+    });
+    assert.equal((await groupBridge.callTool("terminal.list")).class, "blocked");
+    assert.equal((await groupBridge.callTool("terminal.run", { shell: "cmd", command: "echo hi" })).class, "blocked");
+
+    await groupBridge.close();
+    await deniedBridge.close();
   });
 
   it("handles credential dialog by forcing human handoff", async () => {

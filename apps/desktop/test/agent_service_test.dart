@@ -22,8 +22,7 @@ void main() {
         ..writeAsStringSync(
           'OLLAMA_API_KEY=file-key\n'
           'OLLAMA_URL=https://ollama.com/api\n'
-          'USER_NAME=From file\n'
-          'APPBRIDGE_AUTO_APPROVE=false\n',
+          'USER_NAME=From file\n',
         );
 
       final config = AgentConfig.loadFromEnv(
@@ -37,7 +36,6 @@ void main() {
       expect(config.ollamaApiKey, 'process-key');
       expect(config.ollamaBaseUrl, 'https://ollama.com/api');
       expect(config.userName, 'From file');
-      expect(config.autoApprove, isFalse);
       expect(config.userAddress, 'From file');
     });
 
@@ -66,12 +64,10 @@ void main() {
           thinkingModel: 'qwen3.5:9b',
           isLocalMode: true,
           timeoutSeconds: 300,
-          autoApprove: true,
         ),
       );
 
       expect(service.config.userAddress, 'Qureshi sahb');
-      expect(service.config.autoApprove, isTrue);
       expect(service.config.isLocalMode, isTrue);
       expect(service.config.actionModel, 'qwen2.5-coder:14b');
       expect(service.config.thinkingModel, 'qwen3.5:9b');

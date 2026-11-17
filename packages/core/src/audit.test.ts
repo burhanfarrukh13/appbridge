@@ -55,6 +55,20 @@ test("config normalizes defaults and rejects bad policy values", () => {
   assert.throws(() => normalizeConfig({ scene: { ocr: "sometimes" } }), /invalid config/);
 });
 
+test("tools.deny accepts tool and group names and rejects typos", () => {
+  assert.deepEqual(normalizeConfig({}).tools.deny, []);
+  assert.deepEqual(
+    normalizeConfig({ tools: { deny: ["terminal.run", " Terminal ", "app.launch", "terminal.run"] } })
+      .tools.deny,
+    ["terminal.run", "terminal", "app.launch"],
+  );
+  assert.throws(() => normalizeConfig({ tools: { deny: "terminal" } }), /tools\.deny/);
+  assert.throws(() => normalizeConfig({ tools: { deny: ["terminal run"] } }), /tools\.deny\[0\]/);
+  assert.throws(() => normalizeConfig({ tools: { deny: ["terminal.run/../x"] } }), /tools\.deny\[0\]/);
+  assert.throws(() => normalizeConfig({ tools: { deny: ["*"] } }), /tools\.deny\[0\]/);
+  assert.throws(() => normalizeConfig({ tools: { deny: ["terminal..run"] } }), /tools\.deny\[0\]/);
+});
+
 test("policy setting persistence uses TOML keys and preserves other config", async () => {
   const dir = await mkdtemp(join(tmpdir(), "appbridge-config-"));
   const file = join(dir, "config.toml");

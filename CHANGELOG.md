@@ -4,6 +4,39 @@ All notable changes to this project are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); the project uses
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html) once it reaches 1.0.
 
+## [0.0.2] — 2026-11-17
+
+### Added
+
+- **Per-machine tool posture.** `[tools] deny` in `config.toml` refuses a tool or a whole
+  group (`terminal`, `terminal.run`) before dispatch, with the same `class: "blocked"`
+  envelope over MCP, REST and the CLI. `session.status` reports `tools_denied`; `doctor`
+  reports the posture and flags a deny list that removes `session`, `audit` or `screen`.
+- **Agent skill package.** `skill/appbridge-computer-use` — SKILL.md guidance for driving an
+  app through Appbridge (preflight, the perceive/act/verify loop, approval handling, Windows
+  failure modes, tool map), with `npm run package:skill` validating and packaging it.
+- **Publishable workspaces.** The eight packages lost their `private` flag and gained
+  descriptions, `files`, `engines` and `publishConfig`; `npm run pack:check` asserts every
+  tarball carries what an install needs, including the native host.
+- **winget manifests** for the portable ZIP under `packaging/winget`, validated with
+  `winget validate` against the published release hash.
+- **`docs/benchmarks.md`**: the protocol a published task-success number has to follow.
+
+### Changed
+
+- `npm run check` now also runs the package tarball check.
+- Approval decisions and kill-switch resume are operator-only; generic agent dispatch
+  refuses them, and `session.resume` is no longer an MCP tool.
+- Build and test terminal commands now require approval by default because they execute
+  project code. The ineffective unrestricted-control toggle was removed; approval
+  categories remain configurable in Settings.
+- README documents the skill package, the tool posture, and the true status of the npm
+  install path (publish-ready, not published).
+- README and installation guidance distinguish root-scoped file access from unrestricted
+  shell permissions and describe connected AI-provider data flow accurately.
+- Release publishing guidance now covers version checks, portable-package validation, and
+  post-release checksum verification.
+
 ## [0.0.1] — 2026-11-15
 
 First public release: a working Windows Floor, safety harness, MCP/REST/CLI surface, App
@@ -41,7 +74,7 @@ Memory, desktop console, and a portable Windows ZIP package.
   and runs without a source checkout or separate Node.js installation.
 - **Project scaffolding.** Apache-2.0 license, contributing guide, security policy, code of
   conduct, CI workflow, issue and pull request templates, architecture and tool reference
-  docs, examples, and a competitive gap analysis (`gap_plan.md`).
+  docs, examples, and release status documentation.
 
 ### Fixed
 
@@ -62,5 +95,4 @@ Memory, desktop console, and a portable Windows ZIP package.
 ### Known limits
 
 Windows-only; no VLM grounding; OCR reads visible pixels; no VM workspace or rollback;
-single local gateway token. See [`docs/status.md`](./docs/status.md) and
-[`gap_plan.md`](./gap_plan.md).
+single local gateway token. See the [README](./README.md) for current scope.

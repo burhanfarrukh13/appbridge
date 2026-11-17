@@ -16,7 +16,6 @@ const files = [
   "README.md",
   "CONTRIBUTING.md",
   "SECURITY.md",
-  "docs/status.md",
   "docs/architecture.md",
   ".github/ISSUE_TEMPLATE/config.yml",
   "package.json",

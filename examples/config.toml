@@ -37,6 +37,13 @@ max_search_results = 100
 timeout_ms = 30000
 max_output_chars = 32000
 
+[tools]
+# Tools the AI client may not call on this machine. A group name ("terminal") disables
+# every tool in it; a dotted name ("terminal.run") disables one. Denied calls return
+# class = "blocked" and never reach the driver; session.status reports tools_denied.
+# deny = ["terminal.run", "app.launch"]
+deny = []
+
 [policy]
 navigate = "allow"
 read = "allow"

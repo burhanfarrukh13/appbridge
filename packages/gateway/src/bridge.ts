@@ -212,6 +212,22 @@ export class Bridge {
     return existsSync(this.paths.halt);
   }
 
+  /** Groups and tools refused by `[tools] deny`, for status output and clients. */
+  deniedTools(): string[] {
+    return [...this.config.tools.deny];
+  }
+
+  /**
+   * A deny entry matches its own tool and every tool under it, so `terminal`
+   * disables `terminal.run` and `terminal.list` while `terminal.run` leaves
+   * `terminal.list` readable.
+   */
+  isToolAllowed(name: string): boolean {
+    return !this.config.tools.deny.some(
+      (entry) => name === entry || name.startsWith(`${entry}.`),
+    );
+  }
+
   async close(): Promise<void> {
     await this.driver.close().catch(() => undefined);
   }
@@ -1343,6 +1359,7 @@ export class Bridge {
           expires_at: record.expires_at,
         })),
         workspace: this.config.workspace.mode,
+        tools_denied: this.deniedTools(),
         uptime_ms: Date.now() - this.startedAt,
       },
       { route: "core", verified: true },
@@ -1956,8 +1973,22 @@ export class Bridge {
     return result;
   }
 
-  /** Dispatch shared by the REST surface and the CLI. */
+  /** Dispatch agent-callable tools shared by REST and CLI tool calls. */
   async callTool(name: string, args: Record<string, unknown> = {}): Promise<ActionResult> {
+    if (name === "approval.decide" || name === "session.resume") {
+      return failResult("blocked", `${name} is an operator-only control`, {
+        route: "policy",
+        next: name === "session.resume"
+          ? "The human can resume with `appbridge resume` or the desktop control."
+          : "The human can decide this approval with `appbridge approvals approve` or the desktop control.",
+      });
+    }
+    if (!this.isToolAllowed(name)) {
+      return failResult("blocked", `tool ${name} is disabled by [tools] deny in config.toml`, {
+        route: "policy",
+        next: "ask the human to remove it from [tools].deny; the model cannot re-enable a tool",
+      });
+    }
     switch (name) {
       case "screen.describe":
         return this.describe(args as DescribeParams);
@@ -2024,8 +2055,6 @@ export class Bridge {
         return this.status();
       case "session.stop":
         return this.stop();
-      case "session.resume":
-        return this.resume();
       case "audit.tail":
         return this.auditTail(args as { limit?: number });
       case "dialog.list":
@@ -2054,8 +2083,6 @@ export class Bridge {
         return this.inventory();
       case "approval.list":
         return this.listApprovals();
-      case "approval.decide":
-        return this.decideApproval(args as { id: string; decision: "granted" | "denied"; scope?: "once" | "session"; ttl_seconds?: number });
       default:
         return failResult("unsupported", `unknown tool: ${name}`, { route: "gateway" });
     }

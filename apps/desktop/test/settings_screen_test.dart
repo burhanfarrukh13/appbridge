@@ -35,10 +35,8 @@ void main() {
         'edit-draft': 'allow',
         'write': 'allow',
         'destructive': 'approve',
-        'external-effect': 'allow',
         'privileged': 'handoff',
         'credential': 'handoff',
-        'unknown': 'allow',
       },
       pendingApprovalsCount: 0,
       uptimeSeconds: 0,
@@ -72,6 +70,14 @@ void main() {
     expect(find.text('Privileged actions'), findsOneWidget);
     expect(find.text('Credentials'), findsOneWidget);
     expect(find.text('Unclassified actions'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('policy-external-effect-approve')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('policy-unknown-approve')),
+      findsOneWidget,
+    );
 
     await tester.tap(
       find.byKey(const ValueKey('policy-destructive-approve')),

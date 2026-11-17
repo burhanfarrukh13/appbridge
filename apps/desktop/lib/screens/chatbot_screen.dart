@@ -1060,17 +1060,6 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                   ],
                 ),
                 const SizedBox(height: 12),
-                SwitchListTile(
-                  value: cfg.autoApprove,
-                  onChanged: (v) => setState(() => cfg.autoApprove = v),
-                  title: const Text('Unrestricted Computer Control',
-                      style: TextStyle(fontSize: 14, color: AppTheme.textPrimary)),
-                  subtitle: const Text(
-                      'Allows AI to execute everyday window/app actions without asking for confirmation every time',
-                      style: TextStyle(fontSize: 12, color: AppTheme.textSecondary)),
-                  activeThumbColor: AppTheme.success,
-                  contentPadding: EdgeInsets.zero,
-                ),
               ],
             ),
             const SizedBox(height: 16),
