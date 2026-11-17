@@ -2,17 +2,17 @@
 
 # Appbridge
 
-**Let any AI operate any app — even apps with no API, plugin or MCP — safely and locally.**
+**Let any AI operate any desktop app — even apps with no API, plugin or MCP — safely and locally.**
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](./LICENSE)
-[![Node](https://img.shields.io/badge/node-%3E%3D22.23.4-339933.svg)](https://nodejs.org)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D6.svg)](#platform-support)
 [![MCP](https://img.shields.io/badge/MCP-stdio%20%2B%20REST-6E56CF.svg)](./docs/mcp-tools.md)
-
 [![CI](https://github.com/burhanfarrukh13/appbridge/actions/workflows/ci.yml/badge.svg)](https://github.com/burhanfarrukh13/appbridge/actions/workflows/ci.yml)
 
-</div>
+**Native Windows Desktop Agent · MCP Server for Claude Code & Cursor · Built-in Safety Harness**  
+*Accessibility-native UI automation · No VLM required for native UI access*
 
+</div>
 Appbridge gives an AI agent eyes and hands on a real computer. It perceives a window as a
 structured **Scene** (the OS accessibility tree plus window metadata), acts through
 accessibility patterns and input synthesis, verifies that something actually happened, and
@@ -69,6 +69,15 @@ library underneath is replaceable.
   all gated by the same firewall.
 - **Universality enforced by CI.** A lint fails if any app or vendor name appears in a
   package. App knowledge lives in data, never in core code.
+
+## Model selection and hardware
+
+Appbridge uses Windows UI Automation and WinRT OCR for native desktop access; this layer
+does not require a GPU or a vision-language model. The AI model is configured separately.
+Local Ollama and OpenAI-compatible endpoints are supported, subject to provider and model
+compatibility. Model resource use and response speed depend on the selected model, runtime,
+hardware, and provider or network. We have not published measured RAM, CPU, throughput, or
+latency figures.
 
 ## Install
 
