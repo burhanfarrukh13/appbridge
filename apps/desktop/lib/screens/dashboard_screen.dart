@@ -215,7 +215,7 @@ class DashboardScreen extends StatelessWidget {
                   step: '3',
                   title: 'Stay Safe Always',
                   description:
-                      'Irreversible actions (delete, send, submit) always require your 1-click approval. Use the big red button anytime to stop all automation.',
+                      'Actions that need approval pause for your decision. Use the big red button anytime to stop further automation.',
                   icon: Icons.shield_rounded,
                   color: AppTheme.success,
                 ),

@@ -1,7 +1,7 @@
 {
   "name": "@appbridge/memory",
-  "version": "0.0.1",
-  "private": true,
+  "version": "0.0.2",
+  "description": "Playbooks, declarative skills, App packs and dialog classification for Appbridge.",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -19,8 +19,17 @@
       "import": "./dist/skills.js"
     }
   },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22.23.4"
+  },
   "dependencies": {
-    "@appbridge/core": "0.0.1"
+    "@appbridge/core": "0.0.2"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "license": "Apache-2.0",
   "author": "Burhan Qureshi",

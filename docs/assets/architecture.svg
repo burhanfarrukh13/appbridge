@@ -30,7 +30,7 @@
   <path class="arrow" d="M450,176 L450,206"/>
   <rect class="box box-accent" x="200" y="208" width="500" height="86"/>
   <text class="label" x="450" y="236" text-anchor="middle">Gateway</text>
-  <text class="sub" x="450" y="258" text-anchor="middle">43 tools · Scene formatting · action verification · dialog handling</text>
+  <text class="sub" x="450" y="258" text-anchor="middle">42 tools · Scene formatting · action verification · dialog handling</text>
   <text class="tiny" x="450" y="278" text-anchor="middle">packages/gateway</text>
 
   <!-- safety -->

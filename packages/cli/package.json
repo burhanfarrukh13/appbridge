@@ -1,11 +1,8 @@
 {
   "name": "@appbridge/cli",
-  "version": "0.0.1",
-  "private": true,
+  "version": "0.0.2",
+  "description": "The appbridge command: perceive, act, verify, approve, audit and connect MCP clients.",
   "type": "module",
-  "bin": {
-    "appbridge": "dist/index.js"
-  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
@@ -14,13 +11,25 @@
       "import": "./dist/index.js"
     }
   },
+  "bin": {
+    "appbridge": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22.23.4"
+  },
   "dependencies": {
-    "@appbridge/connect": "0.0.1",
-    "@appbridge/core": "0.0.1",
-    "@appbridge/gateway": "0.0.1",
-    "@appbridge/memory": "0.0.1",
-    "@appbridge/providers": "0.0.1",
-    "@appbridge/safety": "0.0.1"
+    "@appbridge/connect": "0.0.2",
+    "@appbridge/core": "0.0.2",
+    "@appbridge/gateway": "0.0.2",
+    "@appbridge/memory": "0.0.2",
+    "@appbridge/providers": "0.0.2",
+    "@appbridge/safety": "0.0.2"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "license": "Apache-2.0",
   "author": "Burhan Qureshi",

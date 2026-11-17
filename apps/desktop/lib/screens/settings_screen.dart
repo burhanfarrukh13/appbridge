@@ -37,7 +37,7 @@ const List<_PolicySetting> _policySettings = [
   ),
   _PolicySetting(
     'edit-draft',
-    'Create or edit local files and run routine build/test work.',
+    'Create or edit local files. Build and test commands require approval by default.',
     'allow',
     AppTheme.primary,
   ),
@@ -56,7 +56,7 @@ const List<_PolicySetting> _policySettings = [
   _PolicySetting(
     'external-effect',
     'Send, publish, upload, purchase, or otherwise affect another person or service.',
-    'allow',
+    'approve',
     AppTheme.warning,
   ),
   _PolicySetting(
@@ -74,7 +74,7 @@ const List<_PolicySetting> _policySettings = [
   _PolicySetting(
     'unknown',
     'Actions the bridge cannot confidently classify.',
-    'allow',
+    'approve',
     AppTheme.textSecondary,
   ),
 ];

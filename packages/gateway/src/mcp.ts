@@ -3,7 +3,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
-import type { ActionResult } from "@appbridge/core";
+import { failResult, type ActionResult } from "@appbridge/core";
 import type { Bridge } from "./bridge.js";
 
 const expectSchema = z.object({
@@ -129,8 +129,21 @@ export function createMcpServer(bridge: Bridge): McpServer {
     name: string,
     config: Record<string, unknown>,
     handler: (args: never) => unknown,
-  ): unknown =>
-    server.registerTool(
+  ): unknown => {
+    // A disabled tool stays registered so the model gets a reason it can read and
+    // report, instead of "unknown tool" that invites a guess at a different one.
+    const guarded = async (args: never): Promise<unknown> => {
+      if (!bridge.isToolAllowed(name)) {
+        return toToolResult(
+          failResult("blocked", `tool ${name} is disabled by [tools] deny in config.toml`, {
+            route: "policy",
+            next: "ask the human to remove it from [tools].deny; the model cannot re-enable a tool",
+          }),
+        );
+      }
+      return handler(args);
+    };
+    return server.registerTool(
       name,
       {
         ...config,
@@ -141,8 +154,9 @@ export function createMcpServer(bridge: Bridge): McpServer {
           destructiveHint: DESTRUCTIVE_TOOLS.has(name),
         },
       } as never,
-      handler as never,
+      guarded as never,
     );
+  };
 
   registerTool(
     "screen.describe",
@@ -467,7 +481,7 @@ export function createMcpServer(bridge: Bridge): McpServer {
     "terminal.run",
     {
       title: "Run a terminal command",
-      description: "Run one non-interactive command in an available shell. A narrow set of routine read/build/test commands runs without prompting; destructive, privileged, external-effect, chained, or unclassified commands require approval or human handoff. The working directory must be under a configured root. Execution has a timeout and bounded output; no persistent terminal session is created.",
+      description: "Run one non-interactive command in an available shell. Read-only commands may run without prompting; build/test commands execute project code and require approval by default. Other commands require approval or human handoff according to policy. The working directory must be under a configured root, but shell commands run with the user's OS permissions and are not sandboxed by filesystem roots. Execution has a timeout and bounded output; no persistent terminal session is created.",
       inputSchema: {
         shell: z.enum(["powershell", "cmd", "bash", "sh", "zsh", "wsl"]),
         command: z.string().min(1).max(20000),
@@ -502,20 +516,10 @@ export function createMcpServer(bridge: Bridge): McpServer {
     "session.stop",
     {
       title: "Stop automation (kill switch)",
-      description: "Block every further action until session.resume. Use immediately if anything looks wrong.",
+      description: "Block every further action until the human resumes from the desktop or CLI. Use immediately if anything looks wrong.",
       inputSchema: {},
     },
     async () => toToolResult(await bridge.stop()),
-  );
-
-  registerTool(
-    "session.resume",
-    {
-      title: "Resume automation",
-      description: "Clear the kill switch. Only the user should resume.",
-      inputSchema: {},
-    },
-    async () => toToolResult(await bridge.resume()),
   );
 
   registerTool(

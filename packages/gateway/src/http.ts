@@ -38,7 +38,6 @@ const TOOL_NAMES = [
   "playbook.get",
   "session.status",
   "session.stop",
-  "session.resume",
   "audit.tail",
   "dialog.list",
   "dialog.handle",
@@ -51,7 +50,6 @@ const TOOL_NAMES = [
   "memory.store.get",
   "memory.store.list",
   "approval.list",
-  "approval.decide",
   "inventory",
 ];
 

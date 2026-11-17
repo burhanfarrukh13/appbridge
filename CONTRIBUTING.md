@@ -26,9 +26,14 @@ npm run desktop          # flutter run -d windows
 ## Before you open a pull request
 
 ```bash
-npm run check            # build + tests + universality lint
+npm run check            # build + tests + universality lint + package tarball check
+npm run package:skill    # if you touched skill/ (validates the SKILL.md package)
 appbridge doctor         # if you touched the native host or config
 ```
+
+`npm run pack:check` packs every workspace and asserts the files an install needs are in
+the tarball — including `native/uia-host.ps1` in `@appbridge/floor`, which the driver
+resolves relative to its own `dist`.
 
 For desktop changes, also run the Flutter checks used by CI:
 
@@ -47,6 +52,8 @@ A change is ready when:
   for one.
 - Any new tool is reachable from MCP, REST and the CLI, and is registered in
   `docs/mcp-tools.md`.
+- A new tool is also added to the skill's tool map (`skill/appbridge-computer-use/reference/tool-map.md`)
+  with when to use it and when not to, or the agent guidance goes stale.
 - Nothing claims more than it verified. If an action cannot be confirmed, return
   `verified: false` and say why instead of returning `ok`.
 

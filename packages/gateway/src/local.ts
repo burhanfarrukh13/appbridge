@@ -39,7 +39,7 @@ export function classifyTerminalCommand(command: string): Effect {
     return "read";
   }
   if (/^(?:npm\s+(?:test|run\s+(?:build|test|check|lint(?::[A-Za-z0-9._-]+)?|typecheck))|dotnet\s+(?:build|test)|flutter\s+(?:test|analyze|build)|cargo\s+(?:test|check|build)|go\s+test|pytest|python(?:3)?\s+-m\s+pytest|mvn\s+test|gradle\s+(?:test|build))(?:\s+[\w./:-]+)*$/i.test(text)) {
-    return "edit-draft";
+    return "unknown";
   }
   return "destructive";
 }

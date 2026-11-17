@@ -45,5 +45,5 @@ body:
       options:
         - label: This can be implemented without naming a specific app or vendor in `packages/`.
           required: true
-        - label: I checked gap_plan.md and this is not already listed.
+        - label: I checked the README, documentation, and open issues for an existing request.
           required: true

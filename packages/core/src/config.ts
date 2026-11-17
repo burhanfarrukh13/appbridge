@@ -15,6 +15,12 @@ export interface AppbridgeConfig {
   workspace: { mode: WorkspaceMode };
   filesystem: { roots: string[]; max_file_bytes: number; max_search_results: number };
   terminal: { timeout_ms: number; max_output_chars: number };
+  /**
+   * Tools this machine refuses to dispatch. An entry is either a whole group
+   * (`terminal`) or one tool (`terminal.run`). Denied tools are refused before
+   * the driver is touched, so a skill or client can run with a smaller surface.
+   */
+  tools: { deny: string[] };
   policy: Record<Effect, PolicyAction>;
 }
 
@@ -44,6 +50,7 @@ export const DEFAULT_CONFIG: AppbridgeConfig = {
   workspace: { mode: "shared" },
   filesystem: { roots: [process.cwd()], max_file_bytes: 5_000_000, max_search_results: 100 },
   terminal: { timeout_ms: 30_000, max_output_chars: 32_000 },
+  tools: { deny: [] },
   policy: { ...DEFAULT_POLICY },
 };
 
@@ -82,6 +89,13 @@ max_search_results = 100
 [terminal]
 timeout_ms = 30000
 max_output_chars = 32000
+
+[tools]
+# Tools the AI client may not call on this machine. A group name disables every
+# tool in it ("terminal"), a dotted name disables one ("terminal.run").
+# Refused calls return class="blocked" and never reach the driver.
+# deny = ["terminal.run", "app.launch"]
+deny = []
 
 [policy]
 navigate = "allow"
@@ -157,6 +171,31 @@ function pickBool(value: unknown, fallback: boolean): boolean {
   return typeof value === "boolean" ? value : fallback;
 }
 
+/**
+ * A deny entry is a group (`terminal`) or one tool (`terminal.run`). Anything
+ * with spaces, wildcards or path characters is a typo, not a tool, and a typo
+ * that silently disabled nothing would be the dangerous kind of mistake.
+ */
+const DENY_ENTRY = /^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)?$/;
+
+function normalizeDenyList(value: unknown): string[] {
+  if (value === undefined) return [...DEFAULT_CONFIG.tools.deny];
+  if (!Array.isArray(value)) {
+    throw new Error('invalid config: tools.deny must be an array of tool or group names, e.g. ["terminal.run"]');
+  }
+  const entries: string[] = [];
+  for (const [index, item] of value.entries()) {
+    if (typeof item !== "string" || !DENY_ENTRY.test(item.trim().toLowerCase())) {
+      throw new Error(
+        `invalid config: tools.deny[${index}] must be a tool ("terminal.run") or group ("terminal") name`,
+      );
+    }
+    const entry = item.trim().toLowerCase();
+    if (!entries.includes(entry)) entries.push(entry);
+  }
+  return entries;
+}
+
 /** Turn parsed TOML into a complete, validated config. Unknown keys are ignored. */
 export function normalizeConfig(raw: unknown): AppbridgeConfig {
   const root = asRecord(raw);
@@ -167,6 +206,7 @@ export function normalizeConfig(raw: unknown): AppbridgeConfig {
   const workspace = asRecord(root["workspace"]);
   const filesystem = asRecord(root["filesystem"]);
   const terminal = asRecord(root["terminal"]);
+  const tools = asRecord(root["tools"]);
   const policy = asRecord(root["policy"]);
 
   const policyValues: Record<Effect, PolicyAction> = { ...DEFAULT_POLICY };
@@ -260,6 +300,7 @@ export function normalizeConfig(raw: unknown): AppbridgeConfig {
         "terminal.max_output_chars",
       ),
     },
+    tools: { deny: normalizeDenyList(tools["deny"]) },
     policy: policyValues,
   };
 }

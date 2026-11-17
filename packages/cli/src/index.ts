@@ -222,6 +222,29 @@ async function commandDoctor(args: ParsedArgs): Promise<void> {
     // config check above already reports the failure
   }
 
+  try {
+    const config = loadConfig(paths.home);
+    const denied = config.tools.deny;
+    // Disabling the groups the agent needs to stop itself or read its own audit
+    // is a posture mistake worth naming, not a crash.
+    const overreach = (["session", "audit", "screen"] as const).filter((group) =>
+      denied.includes(group),
+    );
+    checks.push({
+      name: "tool posture",
+      ok: overreach.length === 0,
+      detail:
+        overreach.length > 0
+          ? `[tools] deny removes ${overreach.join(", ")}; the agent cannot stop itself or read its own audit`
+          : denied.length === 0
+            ? "no tools disabled; terminal.run and app.launch are available to the model"
+            : `disabled by [tools] deny: ${denied.join(", ")}`,
+      critical: false,
+    });
+  } catch {
+    // config check above already reports the failure
+  }
+
   checks.push({
     name: "kill switch",
     ok: true,

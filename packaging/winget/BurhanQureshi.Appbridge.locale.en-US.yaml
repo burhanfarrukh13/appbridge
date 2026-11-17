@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.defaultLocale.1.6.0.schema.json
+PackageIdentifier: BurhanQureshi.Appbridge
+PackageVersion: 0.0.1
+PackageLocale: en-US
+Publisher: Burhan Qureshi
+PublisherUrl: https://github.com/burhanfarrukh13/appbridge
+PublisherSupportUrl: https://github.com/burhanfarrukh13/appbridge/issues
+Author: Burhan Qureshi
+PackageName: Appbridge
+PackageUrl: https://github.com/burhanfarrukh13/appbridge
+License: Apache-2.0
+LicenseUrl: https://github.com/burhanfarrukh13/appbridge/blob/main/LICENSE
+Copyright: Copyright (c) Burhan Qureshi
+ShortDescription: Local, safety-governed computer use for AI agents on Windows.
+Description: "Appbridge gives an MCP-capable AI agent eyes and hands on a Windows desktop. It reads a window as a structured accessibility Scene, acts through UI Automation and input synthesis, verifies that something changed, and puts irreversible effects behind human approval. Portable, unsigned build with no installer, service or telemetry. Windows 10/11 x64 only."
+Moniker: appbridge
+Tags:
+  - computer-use
+  - desktop-automation
+  - mcp
+  - ai-agent
+  - accessibility
+  - automation
+ReleaseNotesUrl: https://github.com/burhanfarrukh13/appbridge/releases/tag/v0.0.1
+ManifestType: defaultLocale
+ManifestVersion: 1.6.0

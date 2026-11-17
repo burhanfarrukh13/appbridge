@@ -1,6 +1,6 @@
 {
   "name": "appbridge",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "type": "module",
   "description": "Local, safety-governed computer use for AI agents: drives any Windows app through accessibility, verifies actions, and gates irreversible effects behind human approval.",
@@ -15,7 +15,9 @@
     "clean": "tsc -b --clean && node -e \"const fs = require('fs'); fs.globSync('packages/*/dist').forEach(p => fs.rmSync(p, {recursive: true, force: true}))\"",
     "test": "node --test packages/*/dist/*.test.js",
     "lint:universality": "node scripts/universality-lint.mjs",
-    "check": "npm run build && npm run test && npm run lint:universality",
+    "pack:check": "node scripts/check-publish.mjs",
+    "package:skill": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package-skill.ps1",
+    "check": "npm run build && npm run test && npm run lint:universality && npm run pack:check",
     "appbridge": "node packages/cli/dist/index.js",
     "desktop": "cd apps/desktop && flutter run -d windows",
     "desktop:build": "cd apps/desktop && flutter build windows",

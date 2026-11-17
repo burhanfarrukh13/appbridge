@@ -37,14 +37,14 @@ Push-Location apps/desktop
 flutter pub get --enforce-lockfile
 flutter test
 flutter analyze
-flutter build windows --release --build-name 0.0.1 --build-number 1
+flutter build windows --release --build-name 0.0.2 --build-number 1
 Pop-Location
-.\scripts\package-windows-release.ps1 -Version 0.0.1
+.\scripts\package-windows-release.ps1 -Version 0.0.2
 ```
 
 The package script validates the app versions, installs production workspace dependencies
 into a staging directory, includes the official Node.js binary and its license, checks the
-Node.js archive checksum, and emits `Appbridge-0.0.1-windows-x64.zip` plus a `.sha256` file
+Node.js archive checksum, and emits `Appbridge-0.0.2-windows-x64.zip` plus a `.sha256` file
 under `.release\`. It does not publish or change Git state.
 
 ## Publish a release
@@ -52,13 +52,70 @@ under `.release\`. It does not publish or change Git state.
 After merging and confirming CI is green:
 
 ```powershell
-git tag -a v0.0.1 -m "Appbridge 0.0.1"
-git push origin v0.0.1
+git tag -a v0.0.2 -m "Appbridge 0.0.2"
+git push origin v0.0.2
 ```
 
 The `Windows release` workflow publishes the pre-release automatically. Confirm that the
 ZIP and checksum appear under the matching release and verify the checksum before
 redistribution. The release is Windows x64 only, unsigned, and pre-1.0.
+
+## Publish the packages to npm
+
+All eight workspaces are publish-ready: no `private` flag, an explicit `files` whitelist,
+`engines`, and `publishConfig.access: public`. Verify before publishing:
+
+```bash
+npm run build
+npm run pack:check        # every tarball contains what install needs
+```
+
+Publish in dependency order, because each package resolves its workspace siblings from the
+registry once installed:
+
+```bash
+npm publish --workspace @appbridge/core
+npm publish --workspace @appbridge/safety
+npm publish --workspace @appbridge/floor
+npm publish --workspace @appbridge/memory
+npm publish --workspace @appbridge/providers
+npm publish --workspace @appbridge/gateway
+npm publish --workspace @appbridge/connect
+npm publish --workspace @appbridge/cli
+```
+
+The scope must exist on npm and the account must be authenticated (`npm login`, or a
+`NODE_AUTH_TOKEN` in CI). `@appbridge/floor` ships `native/uia-host.ps1` inside its
+tarball — if that file is ever dropped from `files`, every installed copy fails at the
+first UI Automation call, which is what `pack:check` exists to catch.
+
+## Submit the winget manifest
+
+`packaging/winget` holds version, installer and en-US locale manifests for the portable
+ZIP, with the URL and SHA-256 of the published release artifact.
+
+```bash
+winget validate --manifest packaging/winget
+```
+
+For each release: bump `PackageVersion` in all three files, replace `InstallerSha256` with
+the hash published next to the ZIP, then submit the three files to
+[`microsoft/winget-pkgs`](https://github.com/microsoft/winget-pkgs) under
+`manifests/b/BurhanQureshi/Appbridge/<version>/` (a `wingetcreate update` PR is the usual
+route). Do not submit a manifest whose hash does not match the asset — winget installs
+will fail in a way users cannot debug.
+
+## Build the agent skill zip
+
+```bash
+npm run package:skill
+```
+
+Writes `.release/appbridge-computer-use-<version>.zip` plus a `.sha256`. The script fails
+closed on: more or fewer than one top-level folder, a missing or malformed `SKILL.md`
+frontmatter, a name that does not match the folder, a thin instruction body, any script or
+binary file, secrets, obfuscation, remote-code-execution or install commands. That mirrors
+the checks a skill marketplace runs, so a package that builds here should pass review.
 
 ## Repository maintenance
 

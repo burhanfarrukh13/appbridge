@@ -6,6 +6,3 @@ contact_links:
   - name: Question or idea
     url: https://github.com/burhanfarrukh13/appbridge/discussions
     about: Ask a question, share a Playbook, or discuss a design.
-  - name: Roadmap and known gaps
-    url: https://github.com/burhanfarrukh13/appbridge/blob/main/gap_plan.md
-    about: Check what is already planned before filing a feature request.

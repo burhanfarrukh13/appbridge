@@ -66,3 +66,9 @@ jobs:
           $version = (Get-Content ..\..\package.json -Raw | ConvertFrom-Json).version
           flutter build windows --release --build-name $version --build-number 1
         working-directory: apps/desktop
+
+      - name: Portable ZIP smoke test
+        shell: pwsh
+        run: |
+          $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
+          .\scripts\package-windows-release.ps1 -Version $version -OutputDirectory $env:RUNNER_TEMP
