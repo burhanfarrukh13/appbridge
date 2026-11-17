@@ -7,12 +7,10 @@
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](./LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D6.svg)](#platform-support)
 [![MCP](https://img.shields.io/badge/MCP-stdio%20%2B%20REST-6E56CF.svg)](./docs/mcp-tools.md)
-[![Hardware](https://img.shields.io/badge/Hardware-Zero%20GPU%20Required-success.svg)](#zero-gpu-required)
-[![Models](https://img.shields.io/badge/Models-Cloud%20%2B%20Local%20Ollama-purple.svg)](#bring-any-model)
 [![CI](https://github.com/burhanfarrukh13/appbridge/actions/workflows/ci.yml/badge.svg)](https://github.com/burhanfarrukh13/appbridge/actions/workflows/ci.yml)
 
 **Native Windows Desktop Agent · MCP Server for Claude Code & Cursor · Built-in Safety Harness**  
-*Lightweight (~50MB RAM) · Runs on any budget laptop · Fast Accessibility Perception (UIA)*
+*Accessibility-native UI automation · No VLM required for native UI access*
 
 </div>
 Appbridge gives an AI agent eyes and hands on a real computer. It perceives a window as a
@@ -72,14 +70,14 @@ library underneath is replaceable.
 - **Universality enforced by CI.** A lint fails if any app or vendor name appears in a
   package. App knowledge lives in data, never in core code.
 
-## Zero GPU Required: Bring Any Model
+## Model selection and hardware
 
-Unlike vision-only desktop agents that require expensive GPUs or costly VLM tokens, Appbridge operates via lightweight **Windows UI Automation (UIA) + WinRT OCR**.
-
-- **Runs on everyday budget laptops:** The Appbridge core daemon and desktop console consume under **50MB RAM** and almost 0% idle CPU.
-- **Fast Cloud Models (Recommended for low-spec PCs):** Connect to Ollama Cloud, Claude 3.5/3.7, OpenAI, Groq, or OpenRouter for instantaneous responses (50–100+ tokens/sec) without heating up your machine.
-- **100% Offline Local Models:** If you have capable local hardware, switch to local Ollama (e.g. `qwen2.5-coder:14b`, `gemma`) for complete air-gapped privacy.
-- **Multi-Model Pipeline:** Uses a high-capacity reasoning model for strategic planning and a fast model for action execution.
+Appbridge uses Windows UI Automation and WinRT OCR for native desktop access; this layer
+does not require a GPU or a vision-language model. The AI model is configured separately.
+Local Ollama and OpenAI-compatible endpoints are supported, subject to provider and model
+compatibility. Model resource use and response speed depend on the selected model, runtime,
+hardware, and provider or network. We have not published measured RAM, CPU, throughput, or
+latency figures.
 
 ## Install
 
