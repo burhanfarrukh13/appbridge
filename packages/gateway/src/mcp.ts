@@ -42,6 +42,22 @@ function captureResult(result: ActionResult): CallToolResult {
   return { content, isError: !result.ok };
 }
 
+function toolErrorResult(error: unknown): CallToolResult {
+  const message = error instanceof Error ? error.message : String(error);
+  return {
+    content: [
+      {
+        type: "text",
+        text: JSON.stringify({
+          ok: false,
+          error: { code: "tool_execution_error", message },
+        }),
+      },
+    ],
+    isError: true,
+  };
+}
+
 const windowTarget = {
   window_id: z.string().optional().describe("Window id from apps.list or screen.describe."),
   window_title: z
@@ -68,6 +84,7 @@ const READ_ONLY_TOOLS = new Set([
   "screen.ocr",
   "screen.capture",
   "ui.find",
+  "ui.wait_for",
   "apps.list",
   "window.list",
   "clipboard.get",
@@ -85,7 +102,19 @@ const READ_ONLY_TOOLS = new Set([
 ]);
 
 /** Tools that can reach outside this machine or start new processes. */
-const OPEN_WORLD_TOOLS = new Set(["app.launch", "terminal.run"]);
+const OPEN_WORLD_TOOLS = new Set([
+  "ui.click",
+  "ui.type",
+  "ui.key",
+  "ui.set_value",
+  "ui.scroll",
+  "ui.drag",
+  "dialog.handle",
+  "skill.run",
+  "lab.run",
+  "app.launch",
+  "terminal.run",
+]);
 
 const IDEMPOTENT_TOOLS = new Set(["window.focus"]);
 
@@ -96,7 +125,6 @@ const DESTRUCTIVE_TOOLS = new Set([
   "ui.key",
   "ui.set_value",
   "ui.drag",
-  "ui.scroll",
   "window.action",
   "clipboard.set",
   "filesystem.write",
@@ -104,6 +132,11 @@ const DESTRUCTIVE_TOOLS = new Set([
   "terminal.run",
   "app.launch",
   "dialog.handle",
+  "skill.compile",
+  "skill.run",
+  "lab.run",
+  "apps.describe",
+  "skill.record_stop",
 ]);
 
 const SERVER_INSTRUCTIONS = [
@@ -133,15 +166,19 @@ export function createMcpServer(bridge: Bridge): McpServer {
     // A disabled tool stays registered so the model gets a reason it can read and
     // report, instead of "unknown tool" that invites a guess at a different one.
     const guarded = async (args: never): Promise<unknown> => {
-      if (!bridge.isToolAllowed(name)) {
-        return toToolResult(
-          failResult("blocked", `tool ${name} is disabled by [tools] deny in config.toml`, {
-            route: "policy",
-            next: "ask the human to remove it from [tools].deny; the model cannot re-enable a tool",
-          }),
-        );
+      try {
+        if (!bridge.isToolAllowed(name)) {
+          return toToolResult(
+            failResult("blocked", `tool ${name} is disabled by [tools] deny in config.toml`, {
+              route: "policy",
+              next: "ask the human to remove it from [tools].deny; the model cannot re-enable a tool",
+            }),
+          );
+        }
+        return await handler(args);
+      } catch (error) {
+        return toolErrorResult(error);
       }
-      return handler(args);
     };
     return server.registerTool(
       name,
@@ -149,8 +186,8 @@ export function createMcpServer(bridge: Bridge): McpServer {
         ...config,
         annotations: {
           readOnlyHint: READ_ONLY_TOOLS.has(name),
-          openWorldHint: OPEN_WORLD_TOOLS.has(name) ? true : undefined,
-          idempotentHint: IDEMPOTENT_TOOLS.has(name) ? true : undefined,
+          openWorldHint: OPEN_WORLD_TOOLS.has(name),
+          idempotentHint: READ_ONLY_TOOLS.has(name) || IDEMPOTENT_TOOLS.has(name),
           destructiveHint: DESTRUCTIVE_TOOLS.has(name),
         },
       } as never,
