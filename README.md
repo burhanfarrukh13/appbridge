@@ -8,6 +8,7 @@
 [![Node](https://img.shields.io/badge/node-%3E%3D22.23.4-339933.svg)](https://nodejs.org)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D6.svg)](#platform-support)
 [![MCP](https://img.shields.io/badge/MCP-stdio%20%2B%20REST-6E56CF.svg)](./docs/mcp-tools.md)
+[![M8ven Score](https://m8ven.ai/badge/mcp/burhanfarrukh13-appbridge-zb15a1?v=be6f83ef08e3e1c0522cfb6a415aec37)](https://m8ven.ai/mcp/burhanfarrukh13-appbridge-zb15a1?s=readme)
 
 [![CI](https://github.com/burhanfarrukh13/appbridge/actions/workflows/ci.yml/badge.svg)](https://github.com/burhanfarrukh13/appbridge/actions/workflows/ci.yml)
 
